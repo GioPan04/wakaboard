@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+import 'package:flutterwaka/api/auth.dart';
+import 'package:flutterwaka/providers/logged_user.dart';
 
 final _loginProvider = AsyncNotifierProvider<_AuthNotifier, String?>(
   () => _AuthNotifier(),
@@ -21,7 +23,13 @@ class LoginPage extends ConsumerWidget {
       ),
       body: Center(
         child: FilledButton(
-          onPressed: () => ref.read(_loginProvider.notifier).login(),
+          onPressed: () => ref.read(_loginProvider.notifier).login().then(
+            (value) {
+              if (value != null) {
+                Navigator.of(context).pushReplacementNamed('/');
+              }
+            },
+          ),
           child: const Text('Login with WakaTime'),
         ),
       ),
@@ -39,7 +47,7 @@ class _AuthNotifier extends AsyncNotifier<String?> {
     state = const AsyncValue.loading();
 
     const appId = 'MBzCVc9hyiqz6KKQjKSJZ2tM';
-    const redirect = 'http://localhost:8080/auth/redirect';
+    const redirect = 'flutterwaka://auth/redirect';
     const scopes = [
       'email',
       'read_logged_time',
@@ -55,17 +63,33 @@ class _AuthNotifier extends AsyncNotifier<String?> {
         'client_id': appId,
         'redirect_uri': redirect,
         'scope': scopes.join(','),
-        'response_type': 'code',
+        'response_type': 'token',
       },
     );
 
     final res = await FlutterWebAuth2.authenticate(
       url: url.toString(),
-      callbackUrlScheme: 'http://localhost:8080/auth/login',
+      callbackUrlScheme: 'flutterwaka',
     );
 
+    final params = _parseUri(res, redirect);
+    final accessToken = params['access_token']!;
+    final user = await AuthApi.login(accessToken);
+
+    ref.read(loggedUserProvider.notifier).state = user;
     state = AsyncValue.data(res);
 
-    print(res);
+    return user;
+  }
+
+  Map<String, String> _parseUri(String uri, String redirect) {
+    final paramList = uri.replaceFirst('$redirect#', '').split('&');
+    final params = <String, String>{};
+    for (final p in paramList) {
+      final param = p.split('=');
+      params[param[0]] = param[1];
+    }
+
+    return params;
   }
 }
