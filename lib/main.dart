@@ -27,6 +27,8 @@ class App extends ConsumerWidget {
     final auth = ref.read(loggedUserProvider);
     return MaterialApp(
       title: 'Flutter Waka',
+      themeMode: ThemeMode.dark,
+      darkTheme: ThemeData.dark(),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,

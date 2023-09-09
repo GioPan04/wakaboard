@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
+import 'package:flutterwaka/providers/logger.dart';
+import 'package:logger/logger.dart';
 
 final clientProvider = StateProvider<Dio?>((ref) {
   final auth = ref.watch(loggedUserProvider);
@@ -14,5 +16,20 @@ final clientProvider = StateProvider<Dio?>((ref) {
     },
   );
 
-  return Dio(options);
+  final dio = Dio(options);
+  dio.interceptors.add(_LogInterceptor(logger: ref.read(loggerProvider)));
+
+  return dio;
 });
+
+class _LogInterceptor extends Interceptor {
+  final Logger logger;
+
+  const _LogInterceptor({required this.logger});
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    logger.e('[Dio]: $err');
+    super.onError(err, handler);
+  }
+}

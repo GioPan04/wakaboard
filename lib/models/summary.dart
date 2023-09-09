@@ -19,7 +19,8 @@ final class Summary {
 
   factory Summary.fromJson(Map<String, dynamic> json) {
     return Summary(
-      days: json['data'].map((d) => SummaryDay.fromJson(d)).toList(),
+      days:
+          json['data'].map<SummaryDay>((d) => SummaryDay.fromJson(d)).toList(),
       start: DateTime.parse(json['start']),
       end: DateTime.parse(json['end']),
       total: Duration(
@@ -52,14 +53,22 @@ final class SummaryDay {
     return SummaryDay(
       grandTotal: GrandTotal.fromJson(json['grand_total']),
       range: Range.fromJson(json['range']),
-      projects: json['projects'].map((p) => SummaryItem.fromJson(p)).toList(),
-      editors: json['editors'].map((p) => SummaryItem.fromJson(p)).toList(),
-      machines: json['machines'].map((p) => SummaryItem.fromJson(p)).toList(),
-      operatingSystems: json['operating_systems']
-          .map((p) => SummaryItem.fromJson(p))
+      projects: json['projects']
+          .map<SummaryItem<Project>>((p) => SummaryItem<Project>.fromJson(p))
           .toList(),
-      categories:
-          json['categories'].map((p) => SummaryItem.fromJson(p)).toList(),
+      editors: json['editors']
+          .map<SummaryItem<Editor>>((p) => SummaryItem<Editor>.fromJson(p))
+          .toList(),
+      machines: json['machines']
+          .map<SummaryItem<Machine>>((p) => SummaryItem<Machine>.fromJson(p))
+          .toList(),
+      operatingSystems: json['operating_systems']
+          .map<SummaryItem<OperatingSystem>>(
+              (p) => SummaryItem<OperatingSystem>.fromJson(p))
+          .toList(),
+      categories: json['categories']
+          .map<SummaryItem<Category>>((p) => SummaryItem<Category>.fromJson(p))
+          .toList(),
     );
   }
 }
