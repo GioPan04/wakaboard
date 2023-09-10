@@ -16,7 +16,7 @@ class HomePage extends ConsumerWidget {
     return Scaffold(
       body: [
         const SummaryPage(),
-        const ProjectPage(),
+        const ProjectsPage(),
         const SummaryPage(),
       ][page],
       bottomNavigationBar: NavigationBar(

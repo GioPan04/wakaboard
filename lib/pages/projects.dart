@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/models/project.dart';
 import 'package:flutterwaka/providers/client.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 final _projectsProvider = FutureProvider<List<Project>>((ref) async {
@@ -13,8 +14,8 @@ final _projectsProvider = FutureProvider<List<Project>>((ref) async {
 
 final _lastHeartbeatFormat = DateFormat('dd/MM/y HH:mm');
 
-class ProjectPage extends ConsumerWidget {
-  const ProjectPage({super.key});
+class ProjectsPage extends ConsumerWidget {
+  const ProjectsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,6 +25,7 @@ class ProjectPage extends ConsumerWidget {
       data: (p) => ListView.builder(
         itemCount: p.length,
         itemBuilder: (context, i) => ListTile(
+          onTap: () => context.push('/home/projects/${p[i].name}'),
           title: Text(p[i].name),
           subtitle: (p[i].lastHeartbeat != null)
               ? Text(

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:flutterwaka/api/auth.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
+import 'package:go_router/go_router.dart';
 
 final _loginProvider = AsyncNotifierProvider<_AuthNotifier, String?>(
   () => _AuthNotifier(),
@@ -26,7 +27,7 @@ class LoginPage extends ConsumerWidget {
           onPressed: () => ref.read(_loginProvider.notifier).login().then(
             (value) {
               if (value != null) {
-                Navigator.of(context).pushReplacementNamed('/');
+                context.go('/home');
               }
             },
           ),
