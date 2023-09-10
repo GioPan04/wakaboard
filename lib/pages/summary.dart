@@ -52,12 +52,11 @@ class SummaryPage extends ConsumerWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                stops: [0.0, 0.9, 1.0],
-                colors: [Colors.transparent, Colors.black, Colors.black],
+                colors: [Colors.transparent, Colors.black],
               ),
             ),
             child: SizedBox(
-              height: 100,
+              height: 120,
               child: SummaryChart(days: s.days),
             ),
           ),
