@@ -40,6 +40,11 @@ class SummaryChart extends StatelessWidget {
         ),
         lineBarsData: [
           LineChartBarData(
+            shadow: Shadow(
+              color: Colors.cyanAccent.withAlpha(150),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
             isStrokeCapRound: true,
             preventCurveOverShooting: true,
             isCurved: true,

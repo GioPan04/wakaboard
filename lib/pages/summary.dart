@@ -30,20 +30,32 @@ class SummaryPage extends ConsumerWidget {
     final summary = ref.watch(_summaryProvider);
 
     return summary.when(
-      data: (s) => SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          children: [
-            const Text('This week summary'),
-            Text(
-              '${s.total.inHours} hours and ${s.total.inMinutes.remainder(60)} minutes',
+      data: (s) => ListView(
+        // padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        children: [
+          Container(
+            padding: const EdgeInsets.only(bottom: 20),
+            foregroundDecoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: [0.0, 0.9, 1.0],
+                colors: [Colors.transparent, Colors.black, Colors.black],
+              ),
             ),
-            SizedBox(
+            child: SizedBox(
               height: 100,
               child: SummaryChart(days: s.days),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          const Text('This week summary'),
+          Text(
+            '${s.total.inHours} hours and ${s.total.inMinutes.remainder(60)} minutes',
+          ),
+        ],
       ),
       error: (e, __) => Text(__.toString()),
       loading: () => const Center(
