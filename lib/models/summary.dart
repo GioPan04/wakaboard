@@ -98,7 +98,7 @@ final class SummaryItem<T> {
       duration: Duration(
         hours: json['hours'],
         minutes: json['minutes'],
-        seconds: json['seconds'],
+        seconds: json['seconds'] ?? 0,
       ),
     );
   }
