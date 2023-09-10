@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/models/summary.dart';
 import 'package:flutterwaka/providers/client.dart';
 import 'package:flutterwaka/widgets/summary_chart.dart';
+import 'package:flutterwaka/widgets/summary_counter.dart';
 import 'package:intl/intl.dart';
 
 final _summaryProvider = FutureProvider<Summary>((ref) async {
@@ -51,9 +52,15 @@ class SummaryPage extends ConsumerWidget {
           const SizedBox(
             height: 20,
           ),
-          const Text('This week summary'),
-          Text(
-            '${s.total.inHours} hours and ${s.total.inMinutes.remainder(60)} minutes',
+          const Text(
+            'WEEK SUMMARY',
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Center(
+            child: SummaryCounter(summary: s),
           ),
         ],
       ),
