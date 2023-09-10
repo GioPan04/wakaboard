@@ -32,7 +32,11 @@ class AuthApi {
   static Future<AuthUser?> login(String token) async {
     final user = await _login(token);
     if (user == null) return null;
-    _secureStorage.write(key: accessTokenKey, value: token);
+    await _secureStorage.write(key: accessTokenKey, value: token);
     return user;
+  }
+
+  static Future<void> logout() async {
+    await _secureStorage.delete(key: accessTokenKey);
   }
 }

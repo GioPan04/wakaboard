@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutterwaka/pages/profile.dart';
 import 'package:flutterwaka/pages/projects.dart';
 import 'package:flutterwaka/pages/summary.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -18,7 +19,7 @@ class HomePage extends ConsumerWidget {
       body: [
         const SummaryPage(),
         const ProjectsPage(),
-        const SummaryPage(),
+        const ProfileScreen(),
       ][page],
       bottomNavigationBar: NavigationBar(
         selectedIndex: page,
