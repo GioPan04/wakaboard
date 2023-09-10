@@ -7,7 +7,7 @@ import 'package:flutterwaka/providers/router.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final auth = await AuthApi.loadUser();
+  final auth = await AuthApi.loadUser().onError((error, stackTrace) => null);
 
   runApp(ProviderScope(
     overrides: [
