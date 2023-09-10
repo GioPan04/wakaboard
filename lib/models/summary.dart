@@ -9,12 +9,14 @@ final class Summary {
   final DateTime start;
   final DateTime end;
   final Duration total;
+  final Duration dailyAverage;
 
   const Summary({
     required this.days,
     required this.start,
     required this.end,
     required this.total,
+    required this.dailyAverage,
   });
 
   factory Summary.fromJson(Map<String, dynamic> json) {
@@ -26,12 +28,15 @@ final class Summary {
       total: Duration(
         seconds: (json['cumulative_total']['seconds'] as double).toInt(),
       ),
+      dailyAverage: Duration(
+        seconds: (json['daily_average']['seconds'] as int).toInt(),
+      ),
     );
   }
 }
 
 final class SummaryDay {
-  final GrandTotal grandTotal;
+  final Duration total;
   final List<SummaryItem<Project>> projects;
   final List<SummaryItem<Editor>> editors;
   final List<SummaryItem<Machine>> machines;
@@ -40,7 +45,7 @@ final class SummaryDay {
   final Range range;
 
   const SummaryDay({
-    required this.grandTotal,
+    required this.total,
     required this.projects,
     required this.editors,
     required this.machines,
@@ -51,7 +56,9 @@ final class SummaryDay {
 
   factory SummaryDay.fromJson(Map<String, dynamic> json) {
     return SummaryDay(
-      grandTotal: GrandTotal.fromJson(json['grand_total']),
+      total: Duration(
+        seconds: (json['grand_total']['total_seconds'] as double).toInt(),
+      ),
       range: Range.fromJson(json['range']),
       projects: json['projects']
           .map<SummaryItem<Project>>((p) => SummaryItem<Project>.fromJson(p))
@@ -116,31 +123,6 @@ final class Range {
       end: DateTime.parse(json['end']),
       date: json['date'],
       timezone: json['timezone'],
-    );
-  }
-}
-
-final class GrandTotal {
-  final int hours;
-  final int minutes;
-  final double totalSeconds;
-  final Duration parsedDuration;
-
-  GrandTotal({
-    required this.hours,
-    required this.minutes,
-    required this.totalSeconds,
-    required this.parsedDuration,
-  });
-
-  factory GrandTotal.fromJson(Map<String, dynamic> json) {
-    return GrandTotal(
-      hours: json['hours'],
-      minutes: json['minutes'],
-      totalSeconds: json['total_seconds'],
-      parsedDuration: Duration(
-        seconds: (json['total_seconds'] as double).toInt(),
-      ),
     );
   }
 }

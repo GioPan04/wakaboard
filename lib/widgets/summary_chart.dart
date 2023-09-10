@@ -56,7 +56,7 @@ class SummaryChart extends StatelessWidget {
                     DateTime.parse(e.range.date)
                         .millisecondsSinceEpoch
                         .toDouble(),
-                    e.grandTotal.totalSeconds,
+                    e.total.inSeconds.toDouble(),
                   ),
                 )
                 .toList(),
