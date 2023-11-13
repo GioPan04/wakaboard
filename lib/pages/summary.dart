@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/models/stats.dart';
 import 'package:flutterwaka/models/summary.dart';
 import 'package:flutterwaka/providers/client.dart';
+import 'package:flutterwaka/widgets/charts/projects.dart';
 import 'package:flutterwaka/widgets/exception.dart';
 import 'package:flutterwaka/widgets/charts/summary.dart';
 import 'package:flutterwaka/widgets/summary_counter.dart';
@@ -74,7 +75,6 @@ class SummaryPage extends ConsumerWidget {
             ...stats.whenOrNull<List<Widget>>(
                   error: (e, s) => [ExceptionButton(error: e, stacktrace: s)],
                   data: (s) => [
-                    const Text('ss'),
                     if (s.bestDay != null)
                       Card(
                         child: Padding(
@@ -98,6 +98,11 @@ class SummaryPage extends ConsumerWidget {
                             ],
                           ),
                         ),
+                      ),
+                    if (s.projects != null)
+                      Container(
+                        padding: const EdgeInsets.only(bottom: 10, top: 10),
+                        child: ProjectsChart(projects: s.projects!),
                       ),
                   ],
                 ) ??
