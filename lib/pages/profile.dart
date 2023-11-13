@@ -46,7 +46,7 @@ class ProfileScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    user.fullName,
+                    user.username,
                     style: theme.textTheme.titleLarge,
                   ),
                   if (stats.hasValue)

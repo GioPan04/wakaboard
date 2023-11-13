@@ -9,13 +9,16 @@ import 'package:json_annotation/json_annotation.dart';
 part 'summary.g.dart';
 
 @JsonSerializable(createToJson: false)
+@SecondsDurationConverter()
 class Summary {
+  static Object? _comTotValue(Map j, String k) => j[k]['seconds'];
+
   @JsonKey(name: 'data')
   final List<SummaryDay> days;
   final DateTime start;
   final DateTime end;
-  @JsonKey(name: 'cumulative_total')
-  final WakaDuration comulativeTotal;
+  @JsonKey(name: 'cumulative_total', readValue: _comTotValue)
+  final Duration comulativeTotal;
   @JsonKey(name: 'daily_average')
   final DailyAverage dailyAverage;
 
@@ -32,9 +35,12 @@ class Summary {
 }
 
 @JsonSerializable(createToJson: false)
+@SecondsDurationConverter()
 class SummaryDay {
-  @JsonKey(name: 'grand_total')
-  final GrandTotal total;
+  static Object? _totalValue(Map j, String k) => j[k]['total_seconds'];
+
+  @JsonKey(name: 'grand_total', readValue: _totalValue)
+  final Duration total;
   final List<SummaryItem<Project>>? projects;
   final List<SummaryItem<Editor>>? editors;
   final List<SummaryItem<Machine>>? machines;
@@ -93,26 +99,6 @@ final class Range {
 
 @JsonSerializable(createToJson: false)
 @SecondsDurationConverter()
-class WakaDuration {
-  final String decimal;
-  final String digital;
-  @JsonKey(name: 'seconds')
-  final Duration duration;
-  final String text;
-
-  const WakaDuration({
-    required this.decimal,
-    required this.digital,
-    required this.duration,
-    required this.text,
-  });
-
-  factory WakaDuration.fromJson(Map<String, dynamic> json) =>
-      _$WakaDurationFromJson(json);
-}
-
-@JsonSerializable(createToJson: false)
-@SecondsDurationConverter()
 class DailyAverage {
   @JsonKey(name: 'days_including_holidays')
   final int daysIncludingHolidays;
@@ -136,22 +122,4 @@ class DailyAverage {
 
   factory DailyAverage.fromJson(Map<String, dynamic> json) =>
       _$DailyAverageFromJson(json);
-}
-
-@JsonSerializable(createToJson: false)
-@SecondsDurationConverter()
-class GrandTotal {
-  final String digital;
-  @JsonKey(name: 'total_seconds')
-  final Duration duration;
-  final String text;
-
-  const GrandTotal({
-    required this.digital,
-    required this.duration,
-    required this.text,
-  });
-
-  factory GrandTotal.fromJson(Map<String, dynamic> json) =>
-      _$GrandTotalFromJson(json);
 }

@@ -37,15 +37,15 @@ class CustomAuthUser extends AuthUser {
 
 final class User {
   final String id;
+  final String username;
+  final String? fullName;
   final String? email;
   final String? photo;
-  final String fullName;
-  final String username;
 
   const User({
     required this.id,
-    required this.fullName,
     required this.username,
+    this.fullName,
     this.photo,
     this.email,
   });
@@ -54,7 +54,7 @@ final class User {
     return User(
       id: json['id'],
       photo: json['photo'],
-      fullName: json['full_name'] ?? json['username'],
+      fullName: json['full_name'],
       username: json['username'],
       email: json['email'],
     );

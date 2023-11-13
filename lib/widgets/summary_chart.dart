@@ -62,7 +62,7 @@ class SummaryChart extends StatelessWidget {
                     i,
                     FlSpot(
                       i.toDouble(),
-                      e.total.duration.inSeconds.toDouble(),
+                      e.total.inSeconds.toDouble(),
                     ),
                   ),
                 )

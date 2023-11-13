@@ -29,7 +29,7 @@ class SummaryCounter extends StatelessWidget {
           Column(
             children: [
               TimeCounter(
-                duration: summary.comulativeTotal.duration,
+                duration: summary.comulativeTotal,
               ),
               const SizedBox(
                 height: 4,

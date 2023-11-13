@@ -12,14 +12,15 @@ Summary _$SummaryFromJson(Map<String, dynamic> json) => Summary(
           .toList(),
       start: DateTime.parse(json['start'] as String),
       end: DateTime.parse(json['end'] as String),
-      comulativeTotal: WakaDuration.fromJson(
-          json['cumulative_total'] as Map<String, dynamic>),
+      comulativeTotal: const SecondsDurationConverter()
+          .fromJson(Summary._comTotValue(json, 'cumulative_total') as num),
       dailyAverage:
           DailyAverage.fromJson(json['daily_average'] as Map<String, dynamic>),
     );
 
 SummaryDay _$SummaryDayFromJson(Map<String, dynamic> json) => SummaryDay(
-      total: GrandTotal.fromJson(json['grand_total'] as Map<String, dynamic>),
+      total: const SecondsDurationConverter()
+          .fromJson(SummaryDay._totalValue(json, 'grand_total') as num),
       projects: (json['projects'] as List<dynamic>?)
           ?.map((e) => SummaryItem<Project>.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -55,14 +56,6 @@ Range _$RangeFromJson(Map<String, dynamic> json) => Range(
       timezone: json['timezone'] as String,
     );
 
-WakaDuration _$WakaDurationFromJson(Map<String, dynamic> json) => WakaDuration(
-      decimal: json['decimal'] as String,
-      digital: json['digital'] as String,
-      duration:
-          const SecondsDurationConverter().fromJson(json['seconds'] as num),
-      text: json['text'] as String,
-    );
-
 DailyAverage _$DailyAverageFromJson(Map<String, dynamic> json) => DailyAverage(
       daysIncludingHolidays: json['days_including_holidays'] as int,
       daysMinusHolidays: json['days_minus_holidays'] as int,
@@ -71,12 +64,5 @@ DailyAverage _$DailyAverageFromJson(Map<String, dynamic> json) => DailyAverage(
           const SecondsDurationConverter().fromJson(json['seconds'] as num),
       durationIncludingOtherLanguage: const SecondsDurationConverter()
           .fromJson(json['seconds_including_other_language'] as num),
-      text: json['text'] as String,
-    );
-
-GrandTotal _$GrandTotalFromJson(Map<String, dynamic> json) => GrandTotal(
-      digital: json['digital'] as String,
-      duration: const SecondsDurationConverter()
-          .fromJson(json['total_seconds'] as num),
       text: json['text'] as String,
     );
