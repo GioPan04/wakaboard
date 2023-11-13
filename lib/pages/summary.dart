@@ -4,7 +4,7 @@ import 'package:flutterwaka/models/stats.dart';
 import 'package:flutterwaka/models/summary.dart';
 import 'package:flutterwaka/providers/client.dart';
 import 'package:flutterwaka/widgets/exception.dart';
-import 'package:flutterwaka/widgets/summary_chart.dart';
+import 'package:flutterwaka/widgets/charts/summary.dart';
 import 'package:flutterwaka/widgets/summary_counter.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
