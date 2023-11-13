@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/api/auth.dart';
+import 'package:flutterwaka/models/stats.dart';
 import 'package:flutterwaka/providers/client.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:go_router/go_router.dart';
@@ -10,9 +11,7 @@ final statsProvider = FutureProvider<Duration>((ref) async {
   final dio = ref.read(clientProvider)!;
   final res = await dio.get('/users/current/stats/all_time');
 
-  return Duration(
-    seconds: (res.data['data']['total_seconds'] as double).toInt(),
-  );
+  return Stats.fromJson(res.data['data']).total;
 });
 
 class ProfileScreen extends ConsumerWidget {

@@ -31,6 +31,10 @@ Stats _$StatsFromJson(Map<String, dynamic> json) => Stats(
           ?.map(
               (e) => SummaryItem<Language>.fromJson(e as Map<String, dynamic>))
           .toList(),
+      total: const SecondsDurationConverter()
+          .fromJson(json['total_seconds'] as num),
+      dailyAverage: const SecondsDurationConverter()
+          .fromJson(json['daily_average'] as num),
     );
 
 DayStats _$DayStatsFromJson(Map<String, dynamic> json) => DayStats(

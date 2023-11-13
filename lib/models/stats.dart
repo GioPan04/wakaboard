@@ -11,6 +11,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'stats.g.dart';
 
 @JsonSerializable(createToJson: false)
+@SecondsDurationConverter()
 class Stats {
   @JsonKey(name: 'best_day')
   final DayStats? bestDay;
@@ -21,6 +22,10 @@ class Stats {
   final List<SummaryItem<Project>>? projects;
   final List<SummaryItem<Machine>>? machines;
   final List<SummaryItem<Language>>? languages;
+  @JsonKey(name: 'total_seconds')
+  final Duration total;
+  @JsonKey(name: 'daily_average')
+  final Duration dailyAverage;
 
   const Stats({
     this.bestDay,
@@ -30,6 +35,8 @@ class Stats {
     this.projects,
     this.machines,
     this.languages,
+    required this.total,
+    required this.dailyAverage,
   });
 
   factory Stats.fromJson(Map<String, dynamic> json) => _$StatsFromJson(json);
