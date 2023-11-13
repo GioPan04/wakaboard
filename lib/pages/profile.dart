@@ -64,6 +64,11 @@ class ProfileScreen extends ConsumerWidget {
             title: const Text('Logout'),
             leading: const Icon(LucideIcons.logOut),
           ),
+          ListTile(
+            onTap: () => showLicensePage(context: context),
+            title: const Text('Licenses'),
+            leading: const Icon(LucideIcons.book),
+          )
         ],
       ),
     );
