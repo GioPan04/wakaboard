@@ -1,20 +1,30 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutterwaka/models/user.dart';
 
 class AuthApi {
   static const String accessTokenKey = 'auth.token';
+  static const String apiUriKey = 'auth.server';
+
   static const _secureStorage = FlutterSecureStorage(
     aOptions: AndroidOptions(
       encryptedSharedPreferences: true,
     ),
   );
 
+  /// Reads user credentials and returns the user. If `AuthUser` is null the
+  /// login screen should be displayed
   static Future<AuthUser?> loadUser() async {
-    final token = await _secureStorage.read(key: 'auth.token');
+    final token = await _secureStorage.read(key: accessTokenKey);
     if (token == null) return null;
-
-    return _wakatimeLogin(token);
+    final base = await _secureStorage.read(key: apiUriKey);
+    if (base == null) {
+      return _wakatimeLogin(token);
+    } else {
+      return _customLogin(token, base);
+    }
   }
 
   static Future<WakatimeAuthUser?> _wakatimeLogin(String token) async {
@@ -50,13 +60,16 @@ class AuthApi {
   }
 
   static Future<CustomAuthUser?> customLogin(String token, String base) async {
-    final user = await _customLogin(token, base);
+    final converted = base64.encode(utf8.encode(token));
+    final user = await _customLogin(converted, base);
     if (user == null) return null;
-    await _secureStorage.write(key: accessTokenKey, value: token);
+    await _secureStorage.write(key: accessTokenKey, value: converted);
+    await _secureStorage.write(key: apiUriKey, value: base);
     return user;
   }
 
   static Future<void> logout() async {
     await _secureStorage.delete(key: accessTokenKey);
+    await _secureStorage.delete(key: apiUriKey);
   }
 }

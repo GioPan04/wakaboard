@@ -12,8 +12,11 @@ class SummaryChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return LineChart(
       LineChartData(
+        lineTouchData: const LineTouchData(enabled: false),
         gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
         titlesData: const FlTitlesData(
@@ -40,25 +43,30 @@ class SummaryChart extends StatelessWidget {
         ),
         lineBarsData: [
           LineChartBarData(
+            color: theme.colorScheme.primary,
             shadow: Shadow(
-              color: Colors.cyanAccent.withAlpha(150),
+              color: theme.colorScheme.primary.withAlpha(150),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
+            curveSmoothness: 0.5,
             isStrokeCapRound: true,
             preventCurveOverShooting: true,
             isCurved: true,
             barWidth: 5,
             dotData: const FlDotData(show: false),
             spots: days
+                .asMap()
                 .map(
-                  (e) => FlSpot(
-                    DateTime.parse(e.range.date)
-                        .millisecondsSinceEpoch
-                        .toDouble(),
-                    e.total.inSeconds.toDouble(),
+                  (i, e) => MapEntry(
+                    i,
+                    FlSpot(
+                      i.toDouble(),
+                      e.total.duration.inSeconds.toDouble(),
+                    ),
                   ),
                 )
+                .values
                 .toList(),
           )
         ],

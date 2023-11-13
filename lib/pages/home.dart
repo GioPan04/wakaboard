@@ -15,7 +15,6 @@ class HomePage extends ConsumerWidget {
     final page = ref.watch(_currentPage);
 
     return Scaffold(
-      backgroundColor: Colors.black,
       body: [
         const SummaryPage(),
         const ProjectsPage(),

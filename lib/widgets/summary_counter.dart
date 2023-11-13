@@ -21,7 +21,7 @@ class SummaryCounter extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6.0),
-        color: Colors.white10,
+        color: theme.colorScheme.primaryContainer,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -29,7 +29,7 @@ class SummaryCounter extends StatelessWidget {
           Column(
             children: [
               TimeCounter(
-                duration: summary.total,
+                duration: summary.comulativeTotal.duration,
               ),
               const SizedBox(
                 height: 4,
@@ -52,7 +52,7 @@ class SummaryCounter extends StatelessWidget {
           Column(
             children: [
               TimeCounter(
-                duration: summary.dailyAverage,
+                duration: summary.dailyAverage.duration,
               ),
               const SizedBox(
                 height: 4,

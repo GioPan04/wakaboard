@@ -1,47 +1,45 @@
 import 'package:flutterwaka/models/category.dart';
+import 'package:flutterwaka/models/converters/seconds_duration.dart';
 import 'package:flutterwaka/models/editors.dart';
 import 'package:flutterwaka/models/machine.dart';
 import 'package:flutterwaka/models/operating_system.dart';
 import 'package:flutterwaka/models/project.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-final class Summary {
+part 'summary.g.dart';
+
+@JsonSerializable(createToJson: false)
+class Summary {
+  @JsonKey(name: 'data')
   final List<SummaryDay> days;
   final DateTime start;
   final DateTime end;
-  final Duration total;
-  final Duration dailyAverage;
+  @JsonKey(name: 'cumulative_total')
+  final WakaDuration comulativeTotal;
+  @JsonKey(name: 'daily_average')
+  final DailyAverage dailyAverage;
 
   const Summary({
     required this.days,
     required this.start,
     required this.end,
-    required this.total,
+    required this.comulativeTotal,
     required this.dailyAverage,
   });
 
-  factory Summary.fromJson(Map<String, dynamic> json) {
-    return Summary(
-      days:
-          json['data'].map<SummaryDay>((d) => SummaryDay.fromJson(d)).toList(),
-      start: DateTime.parse(json['start']),
-      end: DateTime.parse(json['end']),
-      total: Duration(
-        seconds: (json['cumulative_total']['seconds']),
-      ),
-      dailyAverage: Duration(
-        seconds: (json['daily_average']['seconds'] as int).toInt(),
-      ),
-    );
-  }
+  factory Summary.fromJson(Map<String, dynamic> json) =>
+      _$SummaryFromJson(json);
 }
 
-final class SummaryDay {
-  final Duration total;
-  final List<SummaryItem<Project>> projects;
-  final List<SummaryItem<Editor>> editors;
-  final List<SummaryItem<Machine>> machines;
-  final List<SummaryItem<OperatingSystem>> operatingSystems;
-  final List<SummaryItem<Category>> categories;
+@JsonSerializable(createToJson: false)
+class SummaryDay {
+  @JsonKey(name: 'grand_total')
+  final GrandTotal total;
+  final List<SummaryItem<Project>>? projects;
+  final List<SummaryItem<Editor>>? editors;
+  final List<SummaryItem<Machine>>? machines;
+  final List<SummaryItem<OperatingSystem>>? operatingSystems;
+  final List<SummaryItem<Category>>? categories;
   final Range range;
 
   const SummaryDay({
@@ -54,35 +52,16 @@ final class SummaryDay {
     required this.range,
   });
 
-  factory SummaryDay.fromJson(Map<String, dynamic> json) {
-    return SummaryDay(
-      total: Duration(
-        seconds: (json['grand_total']['total_seconds'] as int),
-      ),
-      range: Range.fromJson(json['range']),
-      projects: json['projects']
-          .map<SummaryItem<Project>>((p) => SummaryItem<Project>.fromJson(p))
-          .toList(),
-      editors: json['editors']
-          .map<SummaryItem<Editor>>((p) => SummaryItem<Editor>.fromJson(p))
-          .toList(),
-      machines: json['machines']
-          .map<SummaryItem<Machine>>((p) => SummaryItem<Machine>.fromJson(p))
-          .toList(),
-      operatingSystems: json['operating_systems']
-          .map<SummaryItem<OperatingSystem>>(
-              (p) => SummaryItem<OperatingSystem>.fromJson(p))
-          .toList(),
-      categories: json['categories']
-          .map<SummaryItem<Category>>((p) => SummaryItem<Category>.fromJson(p))
-          .toList(),
-    );
-  }
+  factory SummaryDay.fromJson(Map<String, dynamic> json) =>
+      _$SummaryDayFromJson(json);
 }
 
+@JsonSerializable(createToJson: false)
+@SecondsDurationConverter()
 final class SummaryItem<T> {
   final String name;
   final double percent;
+  @JsonKey(name: 'total_seconds')
   final Duration duration;
 
   const SummaryItem({
@@ -91,23 +70,15 @@ final class SummaryItem<T> {
     required this.duration,
   });
 
-  factory SummaryItem.fromJson(Map<String, dynamic> json) {
-    return SummaryItem(
-      name: json['name'],
-      percent: json['percent'].toDouble(),
-      duration: Duration(
-        hours: json['hours'],
-        minutes: json['minutes'],
-        seconds: json['seconds'] ?? 0,
-      ),
-    );
-  }
+  factory SummaryItem.fromJson(Map<String, dynamic> json) =>
+      _$SummaryItemFromJson(json);
 }
 
+@JsonSerializable(createToJson: false)
 final class Range {
   final DateTime start;
   final DateTime end;
-  final String date;
+  final DateTime date;
   final String timezone;
 
   const Range({
@@ -117,12 +88,70 @@ final class Range {
     required this.timezone,
   });
 
-  factory Range.fromJson(Map<String, dynamic> json) {
-    return Range(
-      start: DateTime.parse(json['start']),
-      end: DateTime.parse(json['end']),
-      date: json['date'],
-      timezone: json['timezone'],
-    );
-  }
+  factory Range.fromJson(Map<String, dynamic> json) => _$RangeFromJson(json);
+}
+
+@JsonSerializable(createToJson: false)
+@SecondsDurationConverter()
+class WakaDuration {
+  final String decimal;
+  final String digital;
+  @JsonKey(name: 'seconds')
+  final Duration duration;
+  final String text;
+
+  const WakaDuration({
+    required this.decimal,
+    required this.digital,
+    required this.duration,
+    required this.text,
+  });
+
+  factory WakaDuration.fromJson(Map<String, dynamic> json) =>
+      _$WakaDurationFromJson(json);
+}
+
+@JsonSerializable(createToJson: false)
+@SecondsDurationConverter()
+class DailyAverage {
+  @JsonKey(name: 'days_including_holidays')
+  final int daysIncludingHolidays;
+  @JsonKey(name: 'days_minus_holidays')
+  final int daysMinusHolidays;
+  final int holidays;
+  @JsonKey(name: 'seconds')
+  final Duration duration;
+  @JsonKey(name: 'seconds_including_other_language')
+  final Duration durationIncludingOtherLanguage;
+  final String text;
+
+  const DailyAverage({
+    required this.daysIncludingHolidays,
+    required this.daysMinusHolidays,
+    required this.holidays,
+    required this.duration,
+    required this.durationIncludingOtherLanguage,
+    required this.text,
+  });
+
+  factory DailyAverage.fromJson(Map<String, dynamic> json) =>
+      _$DailyAverageFromJson(json);
+}
+
+@JsonSerializable(createToJson: false)
+@SecondsDurationConverter()
+class GrandTotal {
+  final String digital;
+  @JsonKey(name: 'total_seconds')
+  final Duration duration;
+  final String text;
+
+  const GrandTotal({
+    required this.digital,
+    required this.duration,
+    required this.text,
+  });
+
+  factory GrandTotal.fromJson(Map<String, dynamic> json) =>
+      _$GrandTotalFromJson(json);
 }

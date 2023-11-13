@@ -7,10 +7,7 @@ import 'package:flutterwaka/providers/router.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final auth = await AuthApi.customLogin(
-    "NzhhNzkzNTktMTBmYS00ODFjLTkyNmEtZDM2MmVmMjY1Yjhk",
-    "https://wakapi.giopan.dev/api/compat/wakatime/v1",
-  ).onError((error, stackTrace) => null);
+  final auth = await AuthApi.loadUser().onError((error, stackTrace) => null);
 
   runApp(ProviderScope(
     overrides: [
@@ -30,6 +27,8 @@ class App extends ConsumerWidget {
     super.key,
   });
 
+  final seedColor = const Color(0xFF047857);
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,10 +36,18 @@ class App extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'Flutter Waka',
-      themeMode: ThemeMode.dark,
-      darkTheme: ThemeData.dark(),
+      themeMode: ThemeMode.system,
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          brightness: Brightness.dark,
+          seedColor: seedColor,
+        ),
+      ),
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: seedColor,
+        ),
         useMaterial3: true,
       ),
       routerConfig: router,

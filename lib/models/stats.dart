@@ -1,69 +1,52 @@
 import 'package:flutterwaka/models/category.dart';
+import 'package:flutterwaka/models/converters/seconds_duration.dart';
 import 'package:flutterwaka/models/editors.dart';
 import 'package:flutterwaka/models/language.dart';
 import 'package:flutterwaka/models/machine.dart';
 import 'package:flutterwaka/models/operating_system.dart';
 import 'package:flutterwaka/models/project.dart';
 import 'package:flutterwaka/models/summary.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-final class Stats {
-  final DayStats bestDay;
-  final List<SummaryItem<Category>> categories;
-  final List<SummaryItem<Editor>> editors;
-  final List<SummaryItem<OperatingSystem>> operatingSystems;
-  final List<SummaryItem<Project>> projects;
-  final List<SummaryItem<Machine>> machines;
-  final List<SummaryItem<Language>> languages;
+part 'stats.g.dart';
+
+@JsonSerializable(createToJson: false)
+class Stats {
+  @JsonKey(name: 'best_day')
+  final DayStats? bestDay;
+  final List<SummaryItem<Category>>? categories;
+  final List<SummaryItem<Editor>>? editors;
+  @JsonKey(name: 'operating_systems')
+  final List<SummaryItem<OperatingSystem>>? operatingSystems;
+  final List<SummaryItem<Project>>? projects;
+  final List<SummaryItem<Machine>>? machines;
+  final List<SummaryItem<Language>>? languages;
 
   const Stats({
-    required this.bestDay,
-    required this.categories,
-    required this.editors,
-    required this.operatingSystems,
-    required this.projects,
-    required this.machines,
-    required this.languages,
+    this.bestDay,
+    this.categories,
+    this.editors,
+    this.operatingSystems,
+    this.projects,
+    this.machines,
+    this.languages,
   });
 
-  factory Stats.fromJson(Map<String, dynamic> json) {
-    return Stats(
-      bestDay: DayStats.fromJson(json['best_day']),
-      categories: json['categories']
-          .map<SummaryItem<Category>>((p) => SummaryItem<Category>.fromJson(p))
-          .toList(),
-      editors: json['editors']
-          .map<SummaryItem<Editor>>((p) => SummaryItem<Editor>.fromJson(p))
-          .toList(),
-      operatingSystems: json['operating_systems']
-          .map<SummaryItem<OperatingSystem>>(
-              (p) => SummaryItem<OperatingSystem>.fromJson(p))
-          .toList(),
-      projects: json['projects']
-          .map<SummaryItem<Project>>((p) => SummaryItem<Project>.fromJson(p))
-          .toList(),
-      machines: json['machines']
-          .map<SummaryItem<Machine>>((p) => SummaryItem<Machine>.fromJson(p))
-          .toList(),
-      languages: json['languages']
-          .map<SummaryItem<Language>>((p) => SummaryItem<Language>.fromJson(p))
-          .toList(),
-    );
-  }
+  factory Stats.fromJson(Map<String, dynamic> json) => _$StatsFromJson(json);
 }
 
-final class DayStats {
-  final DateTime day;
+@JsonSerializable(createToJson: false)
+@SecondsDurationConverter()
+class DayStats {
+  final DateTime date;
+  @JsonKey(name: 'total_seconds')
   final Duration total;
 
   const DayStats({
-    required this.day,
+    required this.date,
     required this.total,
   });
 
-  factory DayStats.fromJson(Map<String, dynamic> json) {
-    return DayStats(
-      day: DateTime.parse(json['date']),
-      total: Duration(seconds: (json['total_seconds'] as double).toInt()),
-    );
-  }
+  factory DayStats.fromJson(Map<String, dynamic> json) =>
+      _$DayStatsFromJson(json);
 }
