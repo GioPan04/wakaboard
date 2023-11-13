@@ -12,7 +12,7 @@ final _summaryProvider = FutureProvider<Summary>((ref) async {
   final dio = ref.watch(clientProvider);
   final today = DateTime.now();
   final start = today.subtract(const Duration(days: 7));
-  final format = DateFormat.yMd();
+  final format = DateFormat('y-MM-dd');
 
   final res = await dio!.getUri(Uri(
     path: '/users/current/summaries',
@@ -103,7 +103,7 @@ class SummaryPage extends ConsumerWidget {
               const SizedBox.shrink(),
         ],
       ),
-      error: (e, __) => Text(__.toString()),
+      error: (e, s) => Text("$e\n$s"),
       loading: () => const Center(
         child: CircularProgressIndicator(),
       ),

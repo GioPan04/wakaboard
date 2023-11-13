@@ -9,14 +9,7 @@ final clientProvider = StateProvider<Dio?>((ref) {
 
   if (auth == null) return null;
 
-  final options = BaseOptions(
-    baseUrl: 'https://wakatime.com/api/v1',
-    headers: {
-      'Authorization': 'Bearer ${auth.token}',
-    },
-  );
-
-  final dio = Dio(options);
+  final dio = Dio(auth.dioBaseOptions);
   dio.interceptors.add(_LogInterceptor(logger: ref.read(loggerProvider)));
 
   return dio;
@@ -29,7 +22,8 @@ class _LogInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    logger.e('[Dio]: $err');
+    logger.e(
+        '[Dio]: $err\n${err.requestOptions.queryParameters}\n${err.response?.data}');
     super.onError(err, handler);
   }
 }

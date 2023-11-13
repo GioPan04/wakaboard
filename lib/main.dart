@@ -7,7 +7,10 @@ import 'package:flutterwaka/providers/router.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final auth = await AuthApi.loadUser().onError((error, stackTrace) => null);
+  final auth = await AuthApi.customLogin(
+    "NzhhNzkzNTktMTBmYS00ODFjLTkyNmEtZDM2MmVmMjY1Yjhk",
+    "https://wakapi.giopan.dev/api/compat/wakatime/v1",
+  ).onError((error, stackTrace) => null);
 
   runApp(ProviderScope(
     overrides: [

@@ -30,14 +30,15 @@ class ProfileScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 64,
-                child: ClipOval(
-                  child: Image.network(
-                    "${user.photo}?s=420",
+              if (user.photo != null)
+                CircleAvatar(
+                  radius: 64,
+                  child: ClipOval(
+                    child: Image.network(
+                      "${user.photo}?s=420",
+                    ),
                   ),
                 ),
-              ),
               const SizedBox(
                 width: 12,
               ),

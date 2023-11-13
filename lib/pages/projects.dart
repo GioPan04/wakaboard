@@ -34,7 +34,12 @@ class ProjectsPage extends ConsumerWidget {
               : null,
         ),
       ),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (e, s) => Center(
+        child: Text(
+          '$e\n$s',
+          textAlign: TextAlign.center,
+        ),
+      ),
       loading: () => const Center(
         child: CircularProgressIndicator(),
       ),

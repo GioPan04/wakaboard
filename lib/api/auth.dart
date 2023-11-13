@@ -14,10 +14,10 @@ class AuthApi {
     final token = await _secureStorage.read(key: 'auth.token');
     if (token == null) return null;
 
-    return _login(token);
+    return _wakatimeLogin(token);
   }
 
-  static Future<AuthUser?> _login(String token) async {
+  static Future<WakatimeAuthUser?> _wakatimeLogin(String token) async {
     final dio = Dio(BaseOptions(
       headers: {
         'Authorization': 'Bearer $token',
@@ -26,11 +26,31 @@ class AuthApi {
     final res = await dio.get('https://wakatime.com/api/v1/users/current');
     final user = User.fromJson(res.data['data']);
 
-    return AuthUser(user, token);
+    return WakatimeAuthUser(user, token);
   }
 
-  static Future<AuthUser?> login(String token) async {
-    final user = await _login(token);
+  static Future<CustomAuthUser?> _customLogin(String token, String uri) async {
+    final dio = Dio(BaseOptions(
+      baseUrl: uri,
+      headers: {
+        'Authorization': 'Basic $token',
+      },
+    ));
+    final res = await dio.get('/users/current');
+    final user = User.fromJson(res.data['data']);
+
+    return CustomAuthUser(user, token, uri);
+  }
+
+  static Future<WakatimeAuthUser?> wakatimeLogin(String token) async {
+    final user = await _wakatimeLogin(token);
+    if (user == null) return null;
+    await _secureStorage.write(key: accessTokenKey, value: token);
+    return user;
+  }
+
+  static Future<CustomAuthUser?> customLogin(String token, String base) async {
+    final user = await _customLogin(token, base);
     if (user == null) return null;
     await _secureStorage.write(key: accessTokenKey, value: token);
     return user;

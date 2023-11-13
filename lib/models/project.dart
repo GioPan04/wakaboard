@@ -20,7 +20,7 @@ final class Project {
       lastHeartbeat: json['last_heartbeat_at'] != null
           ? DateTime.parse(json['last_heartbeat_at'])
           : null,
-      repository: json['repository'] != null
+      repository: json['repository'] != null && json['repository'] != ''
           ? Repository.fromJson(json['repository'])
           : null,
     );

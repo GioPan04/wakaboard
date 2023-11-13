@@ -26,7 +26,7 @@ final class Summary {
       start: DateTime.parse(json['start']),
       end: DateTime.parse(json['end']),
       total: Duration(
-        seconds: (json['cumulative_total']['seconds'] as double).toInt(),
+        seconds: (json['cumulative_total']['seconds']),
       ),
       dailyAverage: Duration(
         seconds: (json['daily_average']['seconds'] as int).toInt(),
@@ -57,7 +57,7 @@ final class SummaryDay {
   factory SummaryDay.fromJson(Map<String, dynamic> json) {
     return SummaryDay(
       total: Duration(
-        seconds: (json['grand_total']['total_seconds'] as double).toInt(),
+        seconds: (json['grand_total']['total_seconds'] as int),
       ),
       range: Range.fromJson(json['range']),
       projects: json['projects']
@@ -94,7 +94,7 @@ final class SummaryItem<T> {
   factory SummaryItem.fromJson(Map<String, dynamic> json) {
     return SummaryItem(
       name: json['name'],
-      percent: json['percent'],
+      percent: json['percent'].toDouble(),
       duration: Duration(
         hours: json['hours'],
         minutes: json['minutes'],
