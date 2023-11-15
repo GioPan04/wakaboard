@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterwaka/models/summary.dart';
 import 'package:intl/intl.dart';
 
-final format = DateFormat('EEE dd');
+final format = DateFormat('EEE');
 
 class SummaryChart extends StatelessWidget {
   final List<SummaryDay> days;
@@ -19,25 +19,38 @@ class SummaryChart extends StatelessWidget {
         lineTouchData: const LineTouchData(enabled: false),
         gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
-        titlesData: const FlTitlesData(
-          topTitles: AxisTitles(
+        titlesData: FlTitlesData(
+          topTitles: const AxisTitles(
             sideTitles: SideTitles(
               showTitles: false,
             ),
           ),
-          rightTitles: AxisTitles(
+          rightTitles: const AxisTitles(
             sideTitles: SideTitles(
               showTitles: false,
             ),
           ),
-          leftTitles: AxisTitles(
+          leftTitles: const AxisTitles(
             sideTitles: SideTitles(
               showTitles: false,
             ),
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
-              showTitles: false,
+              showTitles: true,
+              interval: 1,
+              getTitlesWidget: (value, meta) {
+                final s = days[value.toInt()];
+                return Padding(
+                  padding: const EdgeInsets.only(
+                    top: 10.0,
+                  ),
+                  child: Text(
+                    format.format(s.range.end).toUpperCase(),
+                    style: theme.textTheme.bodySmall,
+                  ),
+                );
+              },
             ),
           ),
         ),

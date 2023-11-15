@@ -8,6 +8,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 final _currentPage = StateProvider((ref) => 0);
 
 class HomePage extends ConsumerWidget {
+  static const List<String> _titles = ['This week', 'Projects', 'Profile'];
+
   const HomePage({super.key});
 
   @override
@@ -15,6 +17,9 @@ class HomePage extends ConsumerWidget {
     final page = ref.watch(_currentPage);
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(_titles[page]),
+      ),
       body: [
         const SummaryPage(),
         const ProjectsPage(),

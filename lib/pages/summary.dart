@@ -13,7 +13,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 final _summaryProvider = FutureProvider<Summary>((ref) async {
   final dio = ref.watch(clientProvider);
   final today = DateTime.now();
-  final start = today.subtract(const Duration(days: 7));
+  final start = today.subtract(const Duration(days: 6));
   final format = DateFormat('y-MM-dd');
 
   final res = await dio!.getUri(Uri(
@@ -49,28 +49,18 @@ class SummaryPage extends ConsumerWidget {
       child: summary.when(
         data: (s) => ListView(
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: SummaryCounter(summary: s),
+              ),
+            ),
             Container(
-              padding: const EdgeInsets.only(bottom: 10, top: 10),
+              padding: const EdgeInsets.only(bottom: 30, top: 10),
               child: SizedBox(
                 height: 120,
                 child: SummaryChart(days: s.days),
               ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            const Text(
-              'WEEK SUMMARY',
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Center(
-              child: SummaryCounter(summary: s),
-            ),
-            const SizedBox(
-              height: 20,
             ),
             ...stats.whenOrNull<List<Widget>>(
                   error: (e, s) => [ExceptionButton(error: e, stacktrace: s)],
