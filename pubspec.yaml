@@ -47,6 +47,8 @@ dependencies:
   url_launcher: ^6.1.14
   timeago: ^3.5.0
   json_annotation: ^4.8.1
+  home_widget:
+    git: git@github.com:milindgoel15/home_widget
 
 dev_dependencies:
   flutter_test:
