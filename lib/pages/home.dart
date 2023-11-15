@@ -3,22 +3,65 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/pages/profile.dart';
 import 'package:flutterwaka/pages/projects.dart';
 import 'package:flutterwaka/pages/summary.dart';
+import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutterwaka/extensions/datetime.dart';
 
 final _currentPage = StateProvider((ref) => 0);
+
+final format = DateFormat('dd/MM/yyyy');
 
 class HomePage extends ConsumerWidget {
   static const List<String> _titles = ['This week', 'Projects', 'Profile'];
 
   const HomePage({super.key});
 
+  Future<void> _selectRange(BuildContext context, WidgetRef ref) async {
+    final currentRange = ref.read(summaryRangeProvider);
+    final updatedRange = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime.fromMillisecondsSinceEpoch(0),
+      lastDate: DateTime.now(),
+      initialDateRange: currentRange,
+    );
+
+    ref.read(summaryRangeProvider.notifier).state =
+        updatedRange ?? currentRange;
+  }
+
+  bool _thisWeek(DateTimeRange range) =>
+      range.end.isSameDay(DateTime.now()) &&
+      range.start.isSameDay(range.end.subtract(const Duration(days: 6)));
+
+  String _title(int page, DateTimeRange range) {
+    if (page != 0) return _titles[page];
+    if (_thisWeek(range)) {
+      return "This week";
+    }
+    return "${format.format(range.start)} - ${format.format(range.end)}";
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final page = ref.watch(_currentPage);
+    final range = ref.watch(summaryRangeProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_titles[page]),
+        title: Text(_title(page, range)),
+        actions: [
+          if (page == 0) ...[
+            if (!_thisWeek(range))
+              IconButton(
+                onPressed: () => ref.invalidate(summaryRangeProvider),
+                icon: const Icon(LucideIcons.x),
+              ),
+            IconButton(
+              onPressed: () => _selectRange(context, ref),
+              icon: const Icon(LucideIcons.calendar),
+            )
+          ]
+        ],
       ),
       body: [
         const SummaryPage(),

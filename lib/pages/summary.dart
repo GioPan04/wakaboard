@@ -10,17 +10,24 @@ import 'package:flutterwaka/widgets/summary_counter.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-final _summaryProvider = FutureProvider<Summary>((ref) async {
-  final dio = ref.watch(clientProvider);
+final summaryRangeProvider = StateProvider<DateTimeRange>((ref) {
   final today = DateTime.now();
   final start = today.subtract(const Duration(days: 6));
+
+  return DateTimeRange(start: start, end: today);
+});
+
+final _summaryProvider = FutureProvider<Summary>((ref) async {
+  final dio = ref.watch(clientProvider);
+  final range = ref.watch(summaryRangeProvider);
+
   final format = DateFormat('y-MM-dd');
 
   final res = await dio!.getUri(Uri(
     path: '/users/current/summaries',
     queryParameters: {
-      'start': format.format(start),
-      'end': format.format(today),
+      'start': format.format(range.start),
+      'end': format.format(range.end),
     },
   ));
 
