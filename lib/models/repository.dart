@@ -1,4 +1,9 @@
-final class Repository {
+import 'package:json_annotation/json_annotation.dart';
+
+part 'repository.g.dart';
+
+@JsonSerializable(createToJson: false)
+class Repository {
   final String id;
   final String name;
   final String fullName;
@@ -11,12 +16,6 @@ final class Repository {
     required this.htmlUrl,
   });
 
-  factory Repository.fromJson(Map<String, dynamic> json) {
-    return Repository(
-      id: json['id'],
-      name: json['name'],
-      fullName: json['full_name'],
-      htmlUrl: json['html_url'],
-    );
-  }
+  factory Repository.fromJson(Map<String, dynamic> json) =>
+      _$RepositoryFromJson(json);
 }

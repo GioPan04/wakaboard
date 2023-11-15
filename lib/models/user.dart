@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:json_annotation/json_annotation.dart';
+part 'user.g.dart';
 
 abstract class AuthUser {
   final User user;
@@ -35,7 +37,8 @@ class CustomAuthUser extends AuthUser {
       );
 }
 
-final class User {
+@JsonSerializable(createToJson: false)
+class User {
   final String id;
   final String username;
   final String? fullName;
@@ -50,13 +53,5 @@ final class User {
     this.email,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
-      photo: json['photo'],
-      fullName: json['full_name'],
-      username: json['username'],
-      email: json['email'],
-    );
-  }
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 }
