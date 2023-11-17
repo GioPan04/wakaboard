@@ -71,6 +71,7 @@ class SummaryPage extends ConsumerWidget {
               ),
             ),
             ...stats.whenOrNull<List<Widget>>(
+                  skipLoadingOnReload: true,
                   error: (e, s) => [ExceptionButton(error: e, stacktrace: s)],
                   data: (s) => [
                     if (s.bestDay != null)
