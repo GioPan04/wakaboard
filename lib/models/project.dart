@@ -1,8 +1,13 @@
 import 'package:flutterwaka/models/repository.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-final class Project {
+part 'project.g.dart';
+
+@JsonSerializable(createToJson: false)
+class Project {
   final String id;
   final String name;
+  @JsonKey(name: 'last_heartbeat_at')
   final DateTime? lastHeartbeat;
   final Repository? repository;
 
@@ -13,16 +18,6 @@ final class Project {
     this.repository,
   });
 
-  factory Project.fromJson(Map<String, dynamic> json) {
-    return Project(
-      id: json['id'],
-      name: json['name'],
-      lastHeartbeat: json['last_heartbeat_at'] != null
-          ? DateTime.parse(json['last_heartbeat_at'])
-          : null,
-      repository: json['repository'] != null && json['repository'] != ''
-          ? Repository.fromJson(json['repository'])
-          : null,
-    );
-  }
+  factory Project.fromJson(Map<String, dynamic> json) =>
+      _$ProjectFromJson(json);
 }

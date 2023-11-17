@@ -6,7 +6,9 @@ part 'repository.g.dart';
 class Repository {
   final String id;
   final String name;
+  @JsonKey(name: 'full_name')
   final String fullName;
+  @JsonKey(name: 'html_url')
   final String htmlUrl;
 
   const Repository({
