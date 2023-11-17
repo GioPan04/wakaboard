@@ -36,6 +36,7 @@ final _summaryProvider = FutureProvider<Summary>((ref) async {
 
 final _statsProvider = FutureProvider<Stats>((ref) async {
   final dio = ref.watch(clientProvider)!;
+  ref.watch(_summaryProvider);
   final res = await dio.get('/users/current/stats/last_7_days');
 
   return Stats.fromJson(res.data['data']);
