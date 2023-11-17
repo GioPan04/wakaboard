@@ -29,12 +29,6 @@ final profilePicProvider = FutureProvider((ref) async {
     options: Options(responseType: ResponseType.bytes),
   );
 
-  switch (res.headers[Headers.contentTypeHeader]?.first) {
-    case 'image/svg+xml':
-      break;
-    default:
-  }
-
   final contentType = res.headers[Headers.contentTypeHeader]?.first;
 
   if (contentType == null || !contentType.startsWith('image/')) {
