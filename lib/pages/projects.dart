@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/models/project.dart';
 import 'package:flutterwaka/providers/client.dart';
+import 'package:flutterwaka/widgets/exception.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -34,12 +35,7 @@ class ProjectsPage extends ConsumerWidget {
               : null,
         ),
       ),
-      error: (e, s) => Center(
-        child: Text(
-          '$e\n$s',
-          textAlign: TextAlign.center,
-        ),
-      ),
+      error: (e, s) => Center(child: ExceptionButton(error: e, stacktrace: s)),
       loading: () => const Center(
         child: CircularProgressIndicator(),
       ),
