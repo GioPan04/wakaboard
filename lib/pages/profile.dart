@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutterwaka/api/auth.dart';
 import 'package:flutterwaka/models/stats.dart';
 import 'package:flutterwaka/providers/client.dart';
@@ -8,10 +12,38 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 final statsProvider = FutureProvider<Duration>((ref) async {
-  final dio = ref.read(clientProvider)!;
+  final dio = ref.watch(clientProvider)!;
   final res = await dio.get('/users/current/stats/all_time');
 
   return Stats.fromJson(res.data['data']).total;
+});
+
+final profilePicProvider = FutureProvider((ref) async {
+  final user = ref.watch(loggedUserProvider)!.user;
+  final dio = ref.read(clientProvider)!;
+
+  if (user.photo == null) return null;
+
+  final res = await dio.get(
+    "${user.photo}?s=420",
+    options: Options(responseType: ResponseType.bytes),
+  );
+
+  switch (res.headers[Headers.contentTypeHeader]?.first) {
+    case 'image/svg+xml':
+      break;
+    default:
+  }
+
+  final contentType = res.headers[Headers.contentTypeHeader]?.first;
+
+  if (contentType == null || !contentType.startsWith('image/')) {
+    throw Exception('Unsupported image');
+  } else if (contentType == 'image/svg+xml') {
+    return utf8.decode(res.data);
+  } else {
+    return res.data;
+  }
 });
 
 class ProfileScreen extends ConsumerWidget {
@@ -21,6 +53,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(loggedUserProvider)!.user;
     final stats = ref.watch(statsProvider);
+    final photo = ref.watch(profilePicProvider);
     final theme = Theme.of(context);
 
     return SafeArea(
@@ -29,13 +62,20 @@ class ProfileScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              if (user.photo != null)
+              if (photo.hasValue)
                 CircleAvatar(
                   radius: 64,
                   child: ClipOval(
-                    child: Image.network(
-                      "${user.photo}?s=420",
-                    ),
+                    child: photo.value.runtimeType == String
+                        ? SvgPicture.string(
+                            photo.value,
+                            fit: BoxFit.cover,
+                            width: 128,
+                            height: 128,
+                          )
+                        : Image.memory(
+                            photo.value,
+                          ),
                   ),
                 ),
               const SizedBox(
