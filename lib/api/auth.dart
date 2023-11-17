@@ -39,7 +39,7 @@ class AuthApi {
     return WakatimeAuthUser(user, token);
   }
 
-  static Future<CustomAuthUser?> _customLogin(String token, String uri) async {
+  static Future<CustomAuthUser> _customLogin(String token, String uri) async {
     final dio = Dio(BaseOptions(
       baseUrl: uri,
       headers: {
@@ -59,10 +59,10 @@ class AuthApi {
     return user;
   }
 
-  static Future<CustomAuthUser?> customLogin(String token, String base) async {
+  static Future<CustomAuthUser> customLogin(String token, String base) async {
     final converted = base64.encode(utf8.encode(token));
     final user = await _customLogin(converted, base);
-    if (user == null) return null;
+
     await _secureStorage.write(key: accessTokenKey, value: converted);
     await _secureStorage.write(key: apiUriKey, value: base);
     return user;

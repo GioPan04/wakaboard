@@ -15,23 +15,9 @@ class ExceptionButton extends StatelessWidget {
   void _openDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(error.toString()),
-        content: SingleChildScrollView(
-          child: Text(
-            stacktrace.toString(),
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(fontFamily: 'monospace'),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          )
-        ],
+      builder: (context) => ExceptionDialog(
+        error: error,
+        stacktrace: stacktrace,
       ),
     );
   }
@@ -67,6 +53,39 @@ class ExceptionButton extends StatelessWidget {
                 child: const Text('Details'),
               ),
             ],
+    );
+  }
+}
+
+class ExceptionDialog extends StatelessWidget {
+  final Object error;
+  final StackTrace stacktrace;
+
+  const ExceptionDialog({
+    required this.error,
+    required this.stacktrace,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(error.toString()),
+      content: SingleChildScrollView(
+        child: Text(
+          stacktrace.toString(),
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall
+              ?.copyWith(fontFamily: 'monospace'),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Close'),
+        )
+      ],
     );
   }
 }

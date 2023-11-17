@@ -5,6 +5,7 @@ import 'package:flutterwaka/api/auth.dart';
 import 'package:flutterwaka/models/user.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/services/wakatime_oauth.dart';
+import 'package:flutterwaka/widgets/exception.dart';
 import 'package:flutterwaka/widgets/or_separator.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,12 +32,32 @@ class LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Future<CustomAuthUser> _customLogin(String baseUri, String token) async {
-    final user = await AuthApi.customLogin(baseUri, token);
-    if (user == null) throw Exception('No user');
+    try {
+      final user = await AuthApi.customLogin(baseUri, token);
+      ref.read(loggedUserProvider.notifier).state = user;
 
-    ref.read(loggedUserProvider.notifier).state = user;
+      return user;
+    } catch (e, s) {
+      if (!mounted) rethrow;
 
-    return user;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('An error occured'),
+          action: SnackBarAction(
+            label: "Details",
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => ExceptionDialog(
+                error: e,
+                stacktrace: s,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      rethrow;
+    }
   }
 
   Future? _loginFuture;
@@ -129,11 +150,9 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                 final future = _customLogin(
                                   _apiTokenController.text,
                                   _baseApiUriController.text,
-                                )
-                                    .then(
-                                      (user) => context.go('/home'),
-                                    )
-                                    .catchError((e) => print(e));
+                                ).then(
+                                  (user) => context.go('/home'),
+                                );
 
                                 setState(() {
                                   _loginFuture = future;
