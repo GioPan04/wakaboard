@@ -5,19 +5,16 @@ import 'package:flutterwaka/models/project.dart';
 import 'package:flutterwaka/models/repository.dart';
 import 'package:flutterwaka/providers/client.dart';
 import 'package:flutterwaka/widgets/commit_history.dart';
+import 'package:flutterwaka/widgets/exception.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-final _projectProvider = FutureProvider.autoDispose.family<Project?, String>(
+final _projectProvider = FutureProvider.autoDispose.family<Project, String>(
   (ref, q) async {
     final dio = ref.watch(clientProvider)!;
-    final res = await dio.get('/users/current/projects?q=$q');
+    final res = await dio.get('/users/current/projects/$q');
 
-    if (res.data['data'][0] != null) {
-      return Project.fromJson(res.data['data'][0]);
-    }
-
-    return null;
+    return Project.fromJson(res.data['data']);
   },
 );
 
@@ -26,7 +23,6 @@ final _commitsProvider =
   (ref, q) async {
     final dio = ref.watch(clientProvider)!;
     final project = await ref.watch(_projectProvider(q).future);
-    if (project == null) return null;
 
     final res = await dio.get('/users/current/projects/${project.id}/commits');
 
@@ -72,7 +68,9 @@ class ProjectPage extends ConsumerWidget {
               CommitHistory(commits: commits.value!.take(5)),
           ],
         ),
-        error: (_, __) => const SizedBox.shrink(),
+        error: (e, s) => Center(
+          child: ExceptionButton(error: e, stacktrace: s),
+        ),
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),
