@@ -56,7 +56,7 @@ class ProfileScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              if (photo.hasValue)
+              if (photo.hasValue && photo.value != null)
                 CircleAvatar(
                   radius: 64,
                   child: ClipOval(
