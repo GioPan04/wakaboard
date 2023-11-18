@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutterwaka/extensions/datetimerange.dart';
 import 'package:flutterwaka/models/stats.dart';
 import 'package:flutterwaka/models/summary.dart';
 import 'package:flutterwaka/providers/client.dart';
@@ -34,6 +35,23 @@ final _summaryProvider = FutureProvider<Summary>((ref) async {
   return Summary.fromJson(res.data);
 });
 
+final _previousSummary = FutureProvider<Summary>((ref) async {
+  final dio = ref.watch(clientProvider);
+  final range = ref.watch(summaryRangeProvider).previusPeriod;
+
+  final format = DateFormat('y-MM-dd');
+
+  final res = await dio!.getUri(Uri(
+    path: '/users/current/summaries',
+    queryParameters: {
+      'start': format.format(range.start),
+      'end': format.format(range.end),
+    },
+  ));
+
+  return Summary.fromJson(res.data);
+});
+
 final _statsProvider = FutureProvider<Stats>((ref) async {
   final dio = ref.watch(clientProvider)!;
   ref.watch(_summaryProvider);
@@ -50,6 +68,7 @@ class SummaryPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final summary = ref.watch(_summaryProvider);
+    final previous = ref.watch(_previousSummary).unwrapPrevious().valueOrNull;
     final stats = ref.watch(_statsProvider);
 
     return RefreshIndicator(
@@ -60,7 +79,10 @@ class SummaryPage extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Center(
-                child: SummaryCounter(summary: s),
+                child: SummaryCounter(
+                  summary: s,
+                  previuosSummary: previous,
+                ),
               ),
             ),
             Container(

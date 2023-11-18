@@ -1,14 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutterwaka/models/summary.dart';
 import 'package:flutterwaka/widgets/time_counter.dart';
+import 'package:flutterwaka/extensions/number.dart';
 
 class SummaryCounter extends StatelessWidget {
   final Summary summary;
+  final Summary? previuosSummary;
 
-  const SummaryCounter({
+  final double? totalIncrease;
+  final double? averageIncrease;
+
+  SummaryCounter({
     required this.summary,
+    this.previuosSummary,
     super.key,
-  });
+  })  : totalIncrease = previuosSummary == null
+            ? null
+            : _calculateIncrease(
+                summary.comulativeTotal,
+                previuosSummary.comulativeTotal,
+              ),
+        averageIncrease = previuosSummary == null
+            ? null
+            : _calculateIncrease(
+                summary.dailyAverage.duration,
+                previuosSummary.dailyAverage.duration,
+              );
+
+  static double _calculateIncrease(Duration actual, Duration previous) {
+    return (actual.inSeconds - previous.inSeconds) / previous.inSeconds;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +49,15 @@ class SummaryCounter extends StatelessWidget {
         children: [
           Column(
             children: [
+              totalIncrease == null
+                  ? const SizedBox.shrink()
+                  : Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Text(
+                        totalIncrease!.asPercentage,
+                        style: theme.textTheme.labelMedium,
+                      ),
+                    ),
               TimeCounter(
                 duration: summary.comulativeTotal,
               ),
@@ -37,7 +67,7 @@ class SummaryCounter extends StatelessWidget {
               Text(
                 'TOTAL',
                 style: theme.textTheme.labelMedium,
-              )
+              ),
             ],
           ),
           Container(
@@ -51,6 +81,15 @@ class SummaryCounter extends StatelessWidget {
           ),
           Column(
             children: [
+              averageIncrease == null
+                  ? const SizedBox.shrink()
+                  : Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Text(
+                        averageIncrease!.asPercentage,
+                        style: theme.textTheme.labelMedium,
+                      ),
+                    ),
               TimeCounter(
                 duration: summary.dailyAverage.duration,
               ),
@@ -60,7 +99,7 @@ class SummaryCounter extends StatelessWidget {
               Text(
                 'DAILY AVERAGE',
                 style: theme.textTheme.labelMedium,
-              )
+              ),
             ],
           ),
         ],
