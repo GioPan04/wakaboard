@@ -19,45 +19,24 @@ final summaryRangeProvider = StateProvider<DateTimeRange>((ref) {
 });
 
 final _summaryProvider = FutureProvider<Summary>((ref) async {
-  final dio = ref.watch(clientProvider);
+  final api = ref.watch(apiProvider)!;
   final range = ref.watch(summaryRangeProvider);
 
-  final format = DateFormat('y-MM-dd');
-
-  final res = await dio!.getUri(Uri(
-    path: '/users/current/summaries',
-    queryParameters: {
-      'start': format.format(range.start),
-      'end': format.format(range.end),
-    },
-  ));
-
-  return Summary.fromJson(res.data);
+  return api.getSummary(range.start, range.end);
 });
 
-final _previousSummary = FutureProvider<Summary>((ref) async {
-  final dio = ref.watch(clientProvider);
+final _previousSummary = FutureProvider<Summary>((ref) {
+  final api = ref.watch(apiProvider)!;
   final range = ref.watch(summaryRangeProvider).previusPeriod;
 
-  final format = DateFormat('y-MM-dd');
-
-  final res = await dio!.getUri(Uri(
-    path: '/users/current/summaries',
-    queryParameters: {
-      'start': format.format(range.start),
-      'end': format.format(range.end),
-    },
-  ));
-
-  return Summary.fromJson(res.data);
+  return api.getSummary(range.start, range.end);
 });
 
 final _statsProvider = FutureProvider<Stats>((ref) async {
-  final dio = ref.watch(clientProvider)!;
+  final api = ref.watch(apiProvider)!;
   ref.watch(_summaryProvider);
-  final res = await dio.get('/users/current/stats/last_7_days');
 
-  return Stats.fromJson(res.data['data']);
+  return api.getStats(StatsRange.last7Days);
 });
 
 final format = DateFormat('dd/MM/yyyy');

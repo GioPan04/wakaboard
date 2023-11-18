@@ -10,23 +10,17 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 final _projectProvider = FutureProvider.autoDispose.family<Project, String>(
-  (ref, q) async {
-    final dio = ref.watch(clientProvider)!;
-    final res = await dio.get('/users/current/projects/$q');
-
-    return Project.fromJson(res.data['data']);
+  (ref, q) {
+    final api = ref.watch(apiProvider)!;
+    return api.getProject(q);
   },
 );
 
 final _commitsProvider =
     FutureProvider.autoDispose.family<List<Commit>?, String>(
-  (ref, q) async {
-    final dio = ref.watch(clientProvider)!;
-    final project = await ref.watch(_projectProvider(q).future);
-
-    final res = await dio.get('/users/current/projects/${project.id}/commits');
-
-    return res.data['commits'].map<Commit>((c) => Commit.fromJson(c)).toList();
+  (ref, q) {
+    final api = ref.watch(apiProvider)!;
+    return api.getProjectCommits(q);
   },
 );
 

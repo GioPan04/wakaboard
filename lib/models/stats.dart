@@ -6,6 +6,7 @@ import 'package:flutterwaka/models/machine.dart';
 import 'package:flutterwaka/models/operating_system.dart';
 import 'package:flutterwaka/models/project.dart';
 import 'package:flutterwaka/models/summary.dart';
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'stats.g.dart';
@@ -56,4 +57,16 @@ class DayStats {
 
   factory DayStats.fromJson(Map<String, dynamic> json) =>
       _$DayStatsFromJson(json);
+}
+
+class StatsRange {
+  static const last7Days = 'last_7_days';
+  static const last30Days = 'last_30_days';
+  static const last6Months = 'last_6_months';
+  static const lastYear = 'last_year';
+  static const allTime = 'all_time';
+
+  static final _rangeFormat = DateFormat('yyyy-MM');
+
+  static String month(DateTime dt) => _rangeFormat.format(dt);
 }

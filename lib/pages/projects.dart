@@ -6,11 +6,9 @@ import 'package:flutterwaka/widgets/exception.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-final _projectsProvider = FutureProvider<List<Project>>((ref) async {
-  final dio = ref.watch(clientProvider);
-  final res = await dio!.get('/users/current/projects');
-
-  return res.data['data'].map<Project>((p) => Project.fromJson(p)).toList();
+final _projectsProvider = FutureProvider<List<Project>>((ref) {
+  final api = ref.watch(apiProvider)!;
+  return api.getProjects();
 });
 
 final _lastHeartbeatFormat = DateFormat('dd/MM/y HH:mm');

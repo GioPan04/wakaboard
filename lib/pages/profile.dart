@@ -13,10 +13,10 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 final statsProvider = FutureProvider<Duration>((ref) async {
-  final dio = ref.watch(clientProvider)!;
-  final res = await dio.get('/users/current/stats/all_time');
+  final api = ref.watch(apiProvider)!;
+  final stats = await api.getStats(StatsRange.allTime);
 
-  return Stats.fromJson(res.data['data']).total;
+  return stats.total;
 });
 
 final profilePicProvider = FutureProvider((ref) async {
