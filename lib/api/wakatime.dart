@@ -13,12 +13,17 @@ class WakaTimeApi {
   final _dateFormat = DateFormat('y-MM-dd');
 
   /// Fetch the user's summary from a given range.
-  Future<Summary> getSummary(DateTime start, DateTime end) async {
+  Future<Summary> getSummary(
+    DateTime start,
+    DateTime end, {
+    String? project,
+  }) async {
     final res = await client.getUri(Uri(
       path: '/users/current/summaries',
       queryParameters: {
         'start': _dateFormat.format(start),
         'end': _dateFormat.format(end),
+        'project': project
       },
     ));
 
@@ -35,19 +40,28 @@ class WakaTimeApi {
   }
 
   /// Fetch the user's projects
-  Future<List<Project>> getProjects() async {
-    final res = await client.get('/users/current/projects');
+  Future<List<Project>> getProjects([String? q]) async {
+    final res = await client.getUri(Uri(
+      path: '/users/current/projects',
+      queryParameters: {'q': q},
+    ));
 
     return res.data['data'].map<Project>((p) => Project.fromJson(p)).toList();
   }
 
   /// Fetch a specific user's project from a given `id`
   /// The `id` can be either the project `id` or `name`
-  /// Currently not supported on Wakapi
   Future<Project> getProject(String id) async {
-    final res = await client.get('/users/current/projects/$id');
+    // Currently not supported by Wakapi, see: https://github.com/muety/wakapi/issues/562
+    // final res = await client.get('/users/current/projects/$id');
 
-    return Project.fromJson(res.data['data']);
+    final projects = await getProjects(id);
+
+    for (var project in projects) {
+      if (project.id == id || project.name == id) return project;
+    }
+
+    throw Exception('Not found');
   }
 
   /// Fetch a specific user's project's commits from a given project `id`
