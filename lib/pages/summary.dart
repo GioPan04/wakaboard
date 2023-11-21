@@ -36,7 +36,7 @@ final _statsProvider = FutureProvider<Stats>((ref) async {
   final api = ref.watch(apiProvider)!;
   ref.watch(_summaryProvider);
 
-  return api.getStats(StatsRange.last30Days);
+  return api.getStats(StatsRange.last7Days);
 });
 
 final format = DateFormat('dd/MM/yyyy');

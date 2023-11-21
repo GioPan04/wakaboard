@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterwaka/extensions/duration.dart';
 import 'package:flutterwaka/models/project.dart';
 import 'package:flutterwaka/models/summary.dart';
 
@@ -64,7 +65,7 @@ class BarChart extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "${e.percent}%",
+                            e.duration.format,
                             style: _calculateTextStyle(theme.textTheme, i),
                           ),
                         ],
