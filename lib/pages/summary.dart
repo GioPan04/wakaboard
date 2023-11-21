@@ -4,7 +4,7 @@ import 'package:flutterwaka/extensions/datetimerange.dart';
 import 'package:flutterwaka/models/stats.dart';
 import 'package:flutterwaka/models/summary.dart';
 import 'package:flutterwaka/providers/client.dart';
-import 'package:flutterwaka/widgets/charts/projects.dart';
+import 'package:flutterwaka/widgets/charts/bar.dart';
 import 'package:flutterwaka/widgets/exception.dart';
 import 'package:flutterwaka/widgets/charts/summary.dart';
 import 'package:flutterwaka/widgets/summary_counter.dart';
@@ -36,7 +36,7 @@ final _statsProvider = FutureProvider<Stats>((ref) async {
   final api = ref.watch(apiProvider)!;
   ref.watch(_summaryProvider);
 
-  return api.getStats(StatsRange.last7Days);
+  return api.getStats(StatsRange.last30Days);
 });
 
 final format = DateFormat('dd/MM/yyyy');
@@ -49,6 +49,7 @@ class SummaryPage extends ConsumerWidget {
     final summary = ref.watch(_summaryProvider);
     final previous = ref.watch(_previousSummary).unwrapPrevious().valueOrNull;
     final stats = ref.watch(_statsProvider);
+    final theme = Theme.of(context);
 
     return RefreshIndicator(
       onRefresh: () => ref.refresh(_summaryProvider.future),
@@ -99,11 +100,17 @@ class SummaryPage extends ConsumerWidget {
                           ),
                         ),
                       ),
-                    if (s.projects != null)
+                    if (s.projects != null) ...[
+                      Text(
+                        'Projects',
+                        style: theme.textTheme.labelLarge,
+                        textAlign: TextAlign.center,
+                      ),
                       Container(
                         padding: const EdgeInsets.only(bottom: 10, top: 10),
-                        child: ProjectsChart(projects: s.projects!),
+                        child: BarChart(items: s.projects!),
                       ),
+                    ]
                   ],
                 ) ??
                 [],
