@@ -32,7 +32,9 @@ jobs:
       - name: 'Get dependencies'
         run: flutter pub get
       - name: 'Build'
-        run: flutter build apk --split-per-abi
+        run: |
+          dart run build_runner build --delete-conflicting-outputs
+          flutter build apk --split-per-abi
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
