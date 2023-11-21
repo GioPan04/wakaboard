@@ -72,4 +72,17 @@ class WakaTimeApi {
 
     return res.data['commits'].map<Commit>((c) => Commit.fromJson(c)).toList();
   }
+
+  /// Fetch the user (or a specific project) total duration
+  /// NOTE: On WakaTime sometimes returns a status code of 202 when it's
+  /// calculating the stats. It could take even 5 or more minutes.
+  /// In case of a 202 status code the function will fail
+  Future<Duration> allTimeSinceToday([String? project]) async {
+    final res = await client.getUri(Uri(
+      path: '/users/current/all_time_since_today',
+      queryParameters: {'project': project},
+    ));
+
+    return Duration(seconds: res.data['data']['total_seconds']);
+  }
 }
