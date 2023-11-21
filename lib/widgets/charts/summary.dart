@@ -37,7 +37,7 @@ class SummaryChart extends StatelessWidget {
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
-              showTitles: true,
+              showTitles: days.length <= 15,
               interval: 1,
               getTitlesWidget: (value, meta) {
                 final s = days[value.toInt()];
