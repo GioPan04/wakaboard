@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/api/auth.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
+import 'package:flutterwaka/providers/package_info.dart';
 import 'package:flutterwaka/providers/router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final auth = await AuthApi.loadUser().onError((error, stackTrace) => null);
+  final packageInfo = await PackageInfo.fromPlatform();
 
   runApp(ProviderScope(
     overrides: [
       loggedUserProvider.overrideWith((ref) => auth),
+      packageInfoProvider.overrideWithValue(packageInfo),
     ],
     child: App(
       auth: auth == null,

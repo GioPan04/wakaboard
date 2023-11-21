@@ -8,6 +8,7 @@ import 'package:flutterwaka/api/auth.dart';
 import 'package:flutterwaka/models/stats.dart';
 import 'package:flutterwaka/providers/client.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
+import 'package:flutterwaka/providers/package_info.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -49,6 +50,7 @@ class ProfileScreen extends ConsumerWidget {
     final user = ref.watch(loggedUserProvider)!.user;
     final stats = ref.watch(statsProvider);
     final photo = ref.watch(profilePicProvider);
+    final packageInfo = ref.read(packageInfoProvider);
     final theme = Theme.of(context);
 
     return ListView(
@@ -99,7 +101,12 @@ class ProfileScreen extends ConsumerWidget {
           leading: const Icon(LucideIcons.logOut),
         ),
         ListTile(
-          onTap: () => showLicensePage(context: context),
+          onTap: () => showLicensePage(
+            context: context,
+            applicationName: packageInfo.appName,
+            applicationVersion:
+                'v${packageInfo.version} (${packageInfo.buildNumber})',
+          ),
           title: const Text('Licenses'),
           leading: const Icon(LucideIcons.book),
         ),

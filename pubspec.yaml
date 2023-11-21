@@ -48,6 +48,7 @@ dependencies:
   timeago: ^3.5.0
   json_annotation: ^4.8.1
   flutter_svg: ^2.0.9
+  package_info_plus: ^4.2.0
 
 dev_dependencies:
   flutter_test:
