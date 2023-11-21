@@ -368,15 +368,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
-  home_widget:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: f29fc0269bb42f8b6ec034e3a4df6ec308898f2f
-      url: "https://github.com/milindgoel15/home_widget"
-    source: git
-    version: "0.3.1"
   http_multi_server:
     dependency: transitive
     description:

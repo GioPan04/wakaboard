@@ -20,25 +20,6 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:label="WakaBoard">
-        <receiver
-            android:name=".WeekSummary"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/week_summary_info" />
-        </receiver>
-
-        <receiver android:exported="true" android:name="es.antonborri.home_widget.HomeWidgetBackgroundReceiver">
-            <intent-filter>
-                <action android:name="es.antonborri.home_widget.action.BACKGROUND" />
-            </intent-filter>
-        </receiver>
-        <service android:name="es.antonborri.home_widget.HomeWidgetBackgroundService"
-            android:permission="android.permission.BIND_JOB_SERVICE" android:exported="true"/>
 
         <activity
             android:name=".MainActivity"

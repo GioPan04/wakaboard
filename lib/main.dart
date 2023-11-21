@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/api/auth.dart';
-import 'package:flutterwaka/home_widgets.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/providers/router.dart';
-import 'package:home_widget/home_widget.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // HomeWidget.setAppGroupId(groupId)
 
   final auth = await AuthApi.loadUser().onError((error, stackTrace) => null);
-  if (auth != null) {
-    HomeWidget.registerBackgroundCallback(backgroundCallback);
-    backgroundCallback(null);
-  }
 
   runApp(ProviderScope(
     overrides: [
