@@ -28,7 +28,7 @@ class ProjectsPage extends ConsumerWidget {
           title: Text(p[i].name),
           subtitle: (p[i].lastHeartbeat != null)
               ? Text(
-                  'Last time worked on ${_lastHeartbeatFormat.format(p[i].lastHeartbeat!)}',
+                  'Last heartbeat on ${_lastHeartbeatFormat.format(p[i].lastHeartbeat!)}',
                 )
               : null,
         ),
