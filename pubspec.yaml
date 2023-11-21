@@ -48,7 +48,7 @@ dependencies:
   timeago: ^3.5.0
   json_annotation: ^4.8.1
   home_widget:
-    git: git@github.com:milindgoel15/home_widget
+    git: https://github.com/milindgoel15/home_widget
   flutter_svg: ^2.0.9
 
 dev_dependencies:

@@ -373,8 +373,8 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "0a7dca1ef9697ed59a0d12771510d5cebb52daf1"
-      url: "git@github.com:milindgoel15/home_widget"
+      resolved-ref: f29fc0269bb42f8b6ec034e3a4df6ec308898f2f
+      url: "https://github.com/milindgoel15/home_widget"
     source: git
     version: "0.3.1"
   http_multi_server:
