@@ -1,4 +1,4 @@
-package dev.giopan.flutterwaka.flutterwaka
+package dev.giopan.wakaboard
 
 import io.flutter.embedding.android.FlutterActivity
 
