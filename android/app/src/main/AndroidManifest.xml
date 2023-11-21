@@ -19,7 +19,7 @@
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:label="flutterwaka">
+        android:label="WakaBoard">
         <receiver
             android:name=".WeekSummary"
             android:exported="false">
