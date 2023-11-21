@@ -36,7 +36,10 @@ class HomePage extends ConsumerWidget {
   String _title(int page, DateTimeRange range) {
     if (page != 0) return _titles[page];
     if (_thisWeek(range)) {
-      return "This week";
+      return "Last 7 days";
+    }
+    if (range.start.isSameDay(range.end)) {
+      return format.format(range.start);
     }
     return "${format.format(range.start)} - ${format.format(range.end)}";
   }
