@@ -5,10 +5,12 @@ import 'package:lucide_icons/lucide_icons.dart';
 class ExceptionButton extends StatelessWidget {
   final Object error;
   final StackTrace stacktrace;
+  final dynamic Function()? retry;
 
   const ExceptionButton({
     required this.error,
     required this.stacktrace,
+    this.retry,
     super.key,
   });
 
@@ -48,9 +50,22 @@ class ExceptionButton extends StatelessWidget {
           : [
               const Text('An error occured'),
               const SizedBox(height: 5),
-              OutlinedButton(
-                onPressed: () => _openDialog(context),
-                child: const Text('Details'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  OutlinedButton(
+                    onPressed: () => _openDialog(context),
+                    child: const Text('Details'),
+                  ),
+                  if (retry != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: FilledButton(
+                        onPressed: retry,
+                        child: const Text('Retry'),
+                      ),
+                    ),
+                ],
               ),
             ],
     );
