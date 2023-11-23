@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/pages/profile.dart';
 import 'package:flutterwaka/pages/projects.dart';
 import 'package:flutterwaka/pages/summary.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutterwaka/extensions/datetime.dart';
@@ -50,6 +51,17 @@ class HomePage extends ConsumerWidget {
     final range = ref.watch(summaryRangeProvider);
 
     return Scaffold(
+      drawer: Drawer(
+        child: Column(
+          children: [
+            ListTile(
+              leading: const Icon(LucideIcons.heartPulse),
+              title: const Text('Heartbeats'),
+              onTap: () => context.push('/heartbeats'),
+            )
+          ],
+        ),
+      ),
       appBar: AppBar(
         title: Text(_title(page, range)),
         actions: [
