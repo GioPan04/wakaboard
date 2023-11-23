@@ -1,6 +1,7 @@
 import 'package:flutterwaka/models/category.dart';
 import 'package:flutterwaka/models/converters/seconds_duration.dart';
 import 'package:flutterwaka/models/editors.dart';
+import 'package:flutterwaka/models/language.dart';
 import 'package:flutterwaka/models/machine.dart';
 import 'package:flutterwaka/models/operating_system.dart';
 import 'package:flutterwaka/models/project.dart';
@@ -44,8 +45,10 @@ class SummaryDay {
   final List<SummaryItem<Project>>? projects;
   final List<SummaryItem<Editor>>? editors;
   final List<SummaryItem<Machine>>? machines;
+  @JsonKey(name: 'operating_systems')
   final List<SummaryItem<OperatingSystem>>? operatingSystems;
   final List<SummaryItem<Category>>? categories;
+  final List<SummaryItem<Language>>? languages;
   final Range range;
 
   const SummaryDay({
@@ -55,6 +58,7 @@ class SummaryDay {
     required this.machines,
     required this.operatingSystems,
     required this.categories,
+    required this.languages,
     required this.range,
   });
 

@@ -39,14 +39,17 @@ class SummaryChart extends StatelessWidget {
             sideTitles: SideTitles(
               showTitles: days.length <= 15,
               interval: 1,
+              reservedSize: 38,
               getTitlesWidget: (value, meta) {
                 final s = days[value.toInt()];
                 return Padding(
-                  padding: const EdgeInsets.only(
-                    top: 10.0,
+                  padding: EdgeInsets.only(
+                    top: 20.0,
+                    left: meta.min == value ? 5 : 0,
+                    right: meta.max == value ? 5 : 0,
                   ),
                   child: Text(
-                    format.format(s.range.end).toUpperCase(),
+                    format.format(s.range.end).toUpperCase()[0],
                     style: theme.textTheme.bodySmall,
                   ),
                 );
@@ -56,10 +59,10 @@ class SummaryChart extends StatelessWidget {
         ),
         lineBarsData: [
           LineChartBarData(
-            color: theme.colorScheme.primary,
+            color: theme.colorScheme.onPrimaryContainer.withAlpha(200),
             shadow: Shadow(
               color: theme.colorScheme.primary.withAlpha(150),
-              blurRadius: 10,
+              blurRadius: 5,
               offset: const Offset(0, 3),
             ),
             curveSmoothness: 0.5,

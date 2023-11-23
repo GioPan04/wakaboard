@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutterwaka/extensions/datetimerange.dart';
+import 'package:flutterwaka/extensions/datetime.dart';
+import 'package:flutterwaka/extensions/duration.dart';
 import 'package:flutterwaka/models/dto/summary.dart';
-import 'package:flutterwaka/models/summary.dart';
 import 'package:flutterwaka/providers/client.dart';
-import 'package:flutterwaka/widgets/charts/bar.dart';
+import 'package:flutterwaka/widgets/dashboard_widget.dart';
 import 'package:flutterwaka/widgets/exception.dart';
 import 'package:flutterwaka/widgets/charts/summary.dart';
-import 'package:flutterwaka/widgets/summary_counter.dart';
 import 'package:intl/intl.dart';
 
 final summaryRangeProvider = StateProvider<DateTimeRange>((ref) {
@@ -25,12 +24,9 @@ final _summaryProvider = FutureProvider<SummaryDTO>((ref) async {
   return SummaryDTO.fromSummary(res);
 });
 
-final _previousSummary = FutureProvider<Summary>((ref) {
-  final api = ref.watch(apiProvider)!;
-  final range = ref.watch(summaryRangeProvider).previusPeriod;
-
-  return api.getSummary(range.start, range.end);
-});
+final _filterProvider = StateProvider<SummaryFilter>(
+  (ref) => SummaryFilter.projects,
+);
 
 final format = DateFormat('dd/MM/yyyy');
 
@@ -39,40 +35,124 @@ class SummaryPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final range = ref.watch(summaryRangeProvider);
     final summary = ref.watch(_summaryProvider);
-    final previous = ref.watch(_previousSummary).unwrapPrevious().valueOrNull;
+    final filter = ref.watch(_filterProvider);
     final theme = Theme.of(context);
+
+    final data = {
+      SummaryFilter.projects: summary.value?.projects,
+      SummaryFilter.editors: summary.value?.editors,
+      SummaryFilter.languages: summary.value?.languages,
+      SummaryFilter.machines: summary.value?.computers,
+      SummaryFilter.oses: summary.value?.oss,
+    };
 
     return RefreshIndicator(
       onRefresh: () => ref.refresh(_summaryProvider.future),
       child: summary.when(
         data: (s) => ListView(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Center(
-                child: SummaryCounter(
-                  summary: s.summary,
-                  previuosSummary: previous,
+            if (!range.start.isSameDay(range.end)) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  child: SizedBox(
+                    height: 200,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 20.0,
+                        right: 20.0,
+                        top: 18.0,
+                        bottom: 14.0,
+                      ),
+                      child: SummaryChart(days: s.summary.days),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: DashboardWidget(
+                        label: 'Daily average',
+                        color: theme.colorScheme.secondary,
+                        value: s.summary.dailyAverage.text,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 6,
+                    ),
+                    Expanded(
+                      child: DashboardWidget(
+                        label: 'Total',
+                        color: theme.colorScheme.tertiary,
+                        value: s.summary.comulativeTotal.format,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+            ],
+            SizedBox(
+              height: 40,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: SummaryFilter.values.length,
+                itemBuilder: (context, i) => Padding(
+                  padding: EdgeInsets.only(
+                    left: i == 0 ? 18.0 : 0.0,
+                    right: i == SummaryFilter.values.length - 1 ? 18.0 : 0,
+                  ),
+                  child: ChoiceChip(
+                    showCheckmark: false,
+                    label: Text(SummaryFilter.values[i].label),
+                    selected: filter == SummaryFilter.values[i],
+                    onSelected: (_) => ref
+                        .read(_filterProvider.notifier)
+                        .state = SummaryFilter.values[i],
+                  ),
+                ),
+                separatorBuilder: (context, index) => const SizedBox(
+                  width: 12,
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.only(bottom: 30, top: 10),
-              child: SizedBox(
-                height: 120,
-                child: SummaryChart(days: s.summary.days),
-              ),
-            ),
-            Text(
-              'Projects',
-              style: theme.textTheme.labelLarge,
-              textAlign: TextAlign.center,
-            ),
-            Container(
-              padding: const EdgeInsets.only(bottom: 10, top: 10),
-              child: BarChart(items: s.projects),
-            ),
+            ...data[filter]!
+                .map(
+                  (e) => ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 18),
+                    title: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            e.name,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Text(
+                          e.duration.shortFormat,
+                          style: theme.textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                    subtitle: LinearProgressIndicator(
+                      value: e.percent / 100,
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                )
+                .toList()
           ],
         ),
         error: (e, s) => Center(
@@ -87,5 +167,23 @@ class SummaryPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+enum SummaryFilter {
+  projects,
+  languages,
+  editors,
+  machines,
+  oses;
+
+  String get label {
+    return switch (this) {
+      projects => 'Projects',
+      languages => 'Languages',
+      editors => 'Editors',
+      machines => 'Computers',
+      oses => 'OSs'
+    };
   }
 }
