@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutterwaka/models/commit.dart';
+import 'package:flutterwaka/models/heartbeat.dart';
 import 'package:flutterwaka/models/project.dart';
 import 'package:flutterwaka/models/stats.dart';
 import 'package:flutterwaka/models/summary.dart';
@@ -84,5 +85,17 @@ class WakaTimeApi {
     ));
 
     return Duration(seconds: res.data['data']['total_seconds']);
+  }
+
+  /// Fetch the heartbeats for one day
+  Future<List<Heartbeat>> heartbeats(DateTime date) async {
+    final res = await client.getUri(Uri(
+      path: '/users/current/heartbeats',
+      queryParameters: {'date': _dateFormat.format(date)},
+    ));
+
+    return res.data['data']
+        .map<Heartbeat>((h) => Heartbeat.fromJson(h))
+        .toList();
   }
 }
