@@ -3,7 +3,9 @@
 
 An open source dashboard client for WakaTime and compatible server implementations (like [Wakapi](https://github.com/muety/wakapi)).
 
-<img src="docs/screenshots/dashboard.png" width="250">
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" width="250">
+</p>
 
 ## Contributing
 Contributions are always welcome! To contribute to the project:
