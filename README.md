@@ -1,6 +1,8 @@
 # WakaBoard
 <img src="https://wakapi.giopan.dev/api/badge/giopan/interval:any/label:wakaboard?label=time">
 
+![dashboard](docs/screenshots/dashboard.png | width=200)
+
 An open source dashboard client for WakaTime and compatible server implementations (like [Wakapi](https://github.com/muety/wakapi)).
 
 ## Contributing
