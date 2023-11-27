@@ -1,14 +1,11 @@
-import 'dart:convert';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:flutterwaka/api/auth.dart';
 import 'package:flutterwaka/models/stats.dart';
 import 'package:flutterwaka/providers/client.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/providers/package_info.dart';
+import 'package:flutterwaka/widgets/avatar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -18,28 +15,6 @@ final statsProvider = FutureProvider<Duration>((ref) async {
   final stats = await api.getStats(StatsRange.allTime);
 
   return stats.total;
-});
-
-final profilePicProvider = FutureProvider((ref) async {
-  final user = ref.watch(loggedUserProvider)!.user;
-  final dio = ref.read(clientProvider)!;
-
-  if (user.photo == null) return null;
-
-  final res = await dio.get(
-    "${user.photo}?s=420",
-    options: Options(responseType: ResponseType.bytes),
-  );
-
-  final contentType = res.headers[Headers.contentTypeHeader]?.first;
-
-  if (contentType == null || !contentType.startsWith('image/')) {
-    throw Exception('Unsupported image');
-  } else if (contentType == 'image/svg+xml') {
-    return utf8.decode(res.data);
-  } else {
-    return res.data;
-  }
 });
 
 class ProfileScreen extends ConsumerWidget {
@@ -59,21 +34,7 @@ class ProfileScreen extends ConsumerWidget {
         Row(
           children: [
             if (photo.hasValue && photo.value != null)
-              CircleAvatar(
-                radius: 64,
-                child: ClipOval(
-                  child: photo.value.runtimeType == String
-                      ? SvgPicture.string(
-                          photo.value,
-                          fit: BoxFit.cover,
-                          width: 128,
-                          height: 128,
-                        )
-                      : Image.memory(
-                          photo.value,
-                        ),
-                ),
-              ),
+              Avatar(image: photo.value),
             const SizedBox(
               width: 12,
             ),
