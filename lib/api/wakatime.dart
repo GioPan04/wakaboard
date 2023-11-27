@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutterwaka/models/commit.dart';
+import 'package:flutterwaka/models/duration.dart';
 import 'package:flutterwaka/models/heartbeat.dart';
 import 'package:flutterwaka/models/project.dart';
 import 'package:flutterwaka/models/stats.dart';
@@ -96,6 +97,19 @@ class WakaTimeApi {
 
     return res.data['data']
         .map<Heartbeat>((h) => Heartbeat.fromJson(h))
+        .toList();
+  }
+
+  /// Fetch the durations for one day
+  /// NOTE: Works only in WakaTime (see muety/wakapi#500)
+  Future<List<WakaDuration>> durations(DateTime date) async {
+    final res = await client.getUri(Uri(
+      path: '/users/current/durations',
+      queryParameters: {'date': _dateFormat.format(date)},
+    ));
+
+    return res.data['data']
+        .map<WakaDuration>((d) => WakaDuration.fromJson(d))
         .toList();
   }
 }

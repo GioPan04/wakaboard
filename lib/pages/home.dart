@@ -52,14 +52,16 @@ class HomePage extends ConsumerWidget {
 
     return Scaffold(
       drawer: Drawer(
-        child: Column(
-          children: [
-            ListTile(
-              leading: const Icon(LucideIcons.heartPulse),
-              title: const Text('Heartbeats'),
-              onTap: () => context.push('/heartbeats'),
-            )
-          ],
+        child: SafeArea(
+          child: Column(
+            children: [
+              ListTile(
+                leading: const Icon(LucideIcons.gitCommit),
+                title: const Text('Timeline'),
+                onTap: () => context.push('/timeline'),
+              )
+            ],
+          ),
         ),
       ),
       appBar: AppBar(
