@@ -73,10 +73,6 @@ class HomePage extends ConsumerWidget {
                 onPressed: () => ref.invalidate(summaryRangeProvider),
                 icon: const Icon(LucideIcons.x),
               ),
-            IconButton(
-              onPressed: () => _selectRange(context, ref),
-              icon: const Icon(LucideIcons.calendar),
-            )
           ]
         ],
       ),
@@ -85,6 +81,13 @@ class HomePage extends ConsumerWidget {
         const ProjectsPage(),
         const ProfileScreen(),
       ][page],
+      floatingActionButton: page != 0
+          ? null
+          : FloatingActionButton.large(
+              tooltip: "Select a date range",
+              onPressed: () => _selectRange(context, ref),
+              child: const Icon(LucideIcons.calendar),
+            ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: page,
         onDestinationSelected: (value) =>

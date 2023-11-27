@@ -152,7 +152,11 @@ class SummaryPage extends ConsumerWidget {
                     ),
                   ),
                 )
-                .toList()
+                .toList(),
+            // FAB space
+            const SizedBox(
+              height: 112,
+            ),
           ],
         ),
         error: (e, s) => Center(
