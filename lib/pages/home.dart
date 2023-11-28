@@ -10,7 +10,10 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutterwaka/extensions/datetime.dart';
 
 final _currentPage = StateProvider((ref) => 0);
-final _showFab = StateProvider((ref) => true);
+final _showFab = StateProvider((ref) {
+  ref.watch(summaryRangeProvider);
+  return true;
+});
 
 final format = DateFormat('dd/MM/yyyy');
 
