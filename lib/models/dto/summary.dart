@@ -31,8 +31,13 @@ class SummaryDTO {
     final List<SummaryItem<Machine>> computers = [];
     final List<SummaryItem<OperatingSystem>> oss = [];
 
+    int productiveDays = 0;
+
     // Sum all durations and percents
     for (final day in summary.days) {
+      // Calculate only days where there are heartbeats
+      if (day.total.inSeconds > 0) productiveDays++;
+
       day.projects?.forEach((element) => _sum<Project>(element, projects));
       day.languages?.forEach((element) => _sum<Language>(element, languages));
       day.editors?.forEach((element) => _sum<Editor>(element, editors));
@@ -43,11 +48,11 @@ class SummaryDTO {
     }
 
     // Recalculate percent per day
-    _average<Project>(projects, summary.days.length);
-    _average<Language>(languages, summary.days.length);
-    _average<Editor>(editors, summary.days.length);
-    _average<Machine>(computers, summary.days.length);
-    _average<OperatingSystem>(oss, summary.days.length);
+    _average<Project>(projects, productiveDays);
+    _average<Language>(languages, productiveDays);
+    _average<Editor>(editors, productiveDays);
+    _average<Machine>(computers, productiveDays);
+    _average<OperatingSystem>(oss, productiveDays);
 
     // Sort by percent
     projects.sort((p, s) => s.percent.compareTo(p.percent));
