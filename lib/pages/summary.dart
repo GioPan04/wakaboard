@@ -55,7 +55,7 @@ class SummaryPage extends ConsumerWidget {
           children: [
             if (!range.start.isSameDay(range.end)) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primaryContainer,
@@ -77,7 +77,7 @@ class SummaryPage extends ConsumerWidget {
               ),
               const SizedBox(height: 6),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   children: [
                     Expanded(
@@ -111,8 +111,8 @@ class SummaryPage extends ConsumerWidget {
                 itemCount: SummaryFilter.values.length,
                 itemBuilder: (context, i) => Padding(
                   padding: EdgeInsets.only(
-                    left: i == 0 ? 18.0 : 0.0,
-                    right: i == SummaryFilter.values.length - 1 ? 18.0 : 0,
+                    left: i == 0 ? 16.0 : 0.0,
+                    right: i == SummaryFilter.values.length - 1 ? 16.0 : 0,
                   ),
                   child: ChoiceChip(
                     showCheckmark: false,
@@ -131,7 +131,7 @@ class SummaryPage extends ConsumerWidget {
             ...data[filter]!
                 .map(
                   (e) => ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 18),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                     title: Row(
                       children: [
                         Expanded(
