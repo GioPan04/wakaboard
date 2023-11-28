@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/pages/profile.dart';
 import 'package:flutterwaka/pages/projects.dart';
 import 'package:flutterwaka/pages/summary.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutterwaka/widgets/cancellable_fab.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutterwaka/extensions/datetime.dart';
 
 final _currentPage = StateProvider((ref) => 0);
+final _showFab = StateProvider((ref) => true);
 
 final format = DateFormat('dd/MM/yyyy');
 
@@ -30,6 +32,18 @@ class HomePage extends ConsumerWidget {
         updatedRange ?? currentRange;
   }
 
+  bool _onScroll(UserScrollNotification n, WidgetRef ref, bool current) {
+    final res = switch (n.direction) {
+      ScrollDirection.forward => true,
+      ScrollDirection.reverse => false,
+      ScrollDirection.idle => current
+    };
+
+    ref.read(_showFab.notifier).state = res;
+
+    return false;
+  }
+
   bool _thisWeek(DateTimeRange range) =>
       range.end.isSameDay(DateTime.now()) &&
       range.start.isSameDay(range.end.subtract(const Duration(days: 6)));
@@ -49,44 +63,28 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final page = ref.watch(_currentPage);
     final range = ref.watch(summaryRangeProvider);
+    final showFab = ref.watch(_showFab);
 
     return Scaffold(
-      drawer: Drawer(
-        child: SafeArea(
-          child: Column(
-            children: [
-              ListTile(
-                leading: const Icon(LucideIcons.gitCommit),
-                title: const Text('Timeline'),
-                onTap: () => context.push('/timeline'),
-              )
-            ],
-          ),
-        ),
-      ),
       appBar: AppBar(
         title: Text(_title(page, range)),
-        actions: [
-          if (page == 0) ...[
-            if (!_thisWeek(range))
-              IconButton(
-                onPressed: () => ref.invalidate(summaryRangeProvider),
-                icon: const Icon(LucideIcons.x),
-              ),
-          ]
-        ],
       ),
       body: [
-        const SummaryPage(),
+        NotificationListener<UserScrollNotification>(
+          onNotification: (n) => _onScroll(n, ref, showFab),
+          child: const SummaryPage(),
+        ),
         const ProjectsPage(),
         const ProfileScreen(),
       ][page],
       floatingActionButton: page != 0
           ? null
-          : FloatingActionButton.large(
-              tooltip: "Select a date range",
-              onPressed: () => _selectRange(context, ref),
-              child: const Icon(LucideIcons.calendar),
+          : CancellableFAB(
+              onPrimaryTapped: () => _selectRange(context, ref),
+              onCancelTapped: () => ref.invalidate(summaryRangeProvider),
+              primary: const Icon(LucideIcons.calendar),
+              cancel: const Icon(LucideIcons.x),
+              open: !_thisWeek(range) && showFab,
             ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: page,
