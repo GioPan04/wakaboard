@@ -20,7 +20,9 @@ class CancellableFAB extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return SizedBox.expand(
+    return SizedBox(
+      width: 96,
+      height: open ? 162 : 96,
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.bottomRight,
