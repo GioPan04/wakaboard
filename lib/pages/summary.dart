@@ -7,6 +7,7 @@ import 'package:flutterwaka/providers/client.dart';
 import 'package:flutterwaka/widgets/dashboard_widget.dart';
 import 'package:flutterwaka/widgets/exception.dart';
 import 'package:flutterwaka/widgets/charts/summary.dart';
+import 'package:flutterwaka/widgets/scrollable_categories.dart';
 import 'package:intl/intl.dart';
 
 final summaryRangeProvider = StateProvider<DateTimeRange>((ref) {
@@ -104,29 +105,12 @@ class SummaryPage extends ConsumerWidget {
                 height: 24,
               ),
             ],
-            SizedBox(
-              height: 40,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: SummaryFilter.values.length,
-                itemBuilder: (context, i) => Padding(
-                  padding: EdgeInsets.only(
-                    left: i == 0 ? 16.0 : 0.0,
-                    right: i == SummaryFilter.values.length - 1 ? 16.0 : 0,
-                  ),
-                  child: ChoiceChip(
-                    showCheckmark: false,
-                    label: Text(SummaryFilter.values[i].label),
-                    selected: filter == SummaryFilter.values[i],
-                    onSelected: (_) => ref
-                        .read(_filterProvider.notifier)
-                        .state = SummaryFilter.values[i],
-                  ),
-                ),
-                separatorBuilder: (context, index) => const SizedBox(
-                  width: 12,
-                ),
-              ),
+            ScrollableCategories(
+              items: SummaryFilter.values,
+              getLabel: (v) => v.label,
+              onItemPressed: (f) =>
+                  ref.read(_filterProvider.notifier).state = f,
+              selected: (f) => f == filter,
             ),
             ...data[filter]!
                 .map(
