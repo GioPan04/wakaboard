@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/extensions/datetime.dart';
 import 'package:flutterwaka/extensions/duration.dart';
+import 'package:flutterwaka/models/dto/hourly_heartbeats.dart';
 import 'package:flutterwaka/models/dto/summary.dart';
 import 'package:flutterwaka/providers/client.dart';
+import 'package:flutterwaka/widgets/charts/heartbeats.dart';
 import 'package:flutterwaka/widgets/dashboard_widget.dart';
 import 'package:flutterwaka/widgets/exception.dart';
 import 'package:flutterwaka/widgets/charts/summary.dart';
@@ -25,6 +27,16 @@ final _summaryProvider = FutureProvider<SummaryDTO>((ref) async {
   return SummaryDTO.fromSummary(res);
 });
 
+final _heartbeatsProvider = FutureProvider<HourlyHeartbeats?>((ref) async {
+  final range = ref.watch(summaryRangeProvider);
+  final api = ref.watch(apiProvider)!;
+
+  if (!range.start.isSameDay(range.end)) return null;
+
+  final heartbeats = await api.heartbeats(range.start);
+  return HourlyHeartbeats.fromHeartbeats(heartbeats);
+});
+
 final _filterProvider = StateProvider<SummaryFilter>(
   (ref) => SummaryFilter.projects,
 );
@@ -39,6 +51,8 @@ class SummaryPage extends ConsumerWidget {
     final range = ref.watch(summaryRangeProvider);
     final summary = ref.watch(_summaryProvider);
     final filter = ref.watch(_filterProvider);
+    final heartbeats = ref.watch(_heartbeatsProvider).unwrapPrevious();
+
     final theme = Theme.of(context);
 
     final data = {
@@ -54,6 +68,34 @@ class SummaryPage extends ConsumerWidget {
       child: summary.when(
         data: (s) => ListView(
           children: [
+            if (heartbeats.valueOrNull != null) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  child: SizedBox(
+                    height: 200,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 20.0,
+                        right: 20.0,
+                        top: 18.0,
+                        bottom: 14.0,
+                      ),
+                      child: HeartbeatsChart(
+                        hours: heartbeats.valueOrNull!.hours,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+            ],
             if (!range.start.isSameDay(range.end)) ...[
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
