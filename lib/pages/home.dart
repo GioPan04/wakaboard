@@ -98,40 +98,49 @@ class HomePage extends ConsumerWidget {
           const ProfileScreen(),
         ][page],
       ),
-      floatingActionButton: page != 0
-          ? null
-          : CancellableFAB(
-              onPrimaryTapped: () => _selectRange(context, ref),
-              onCancelTapped: () => ref.invalidate(summaryRangeProvider),
-              primary: const Icon(LucideIcons.calendar),
-              cancel: const Icon(LucideIcons.x),
-              open: !_thisWeek(range) && showFab,
-            ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: page,
-        onDestinationSelected: (value) =>
-            ref.read(_currentPage.notifier).state = value,
-        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(LucideIcons.layoutDashboard),
-            label: "Dashboard",
-          ),
-          NavigationDestination(
-            icon: Icon(LucideIcons.code),
-            label: "Projects",
-          ),
-          NavigationDestination(
-            icon: Icon(LucideIcons.user),
-            label: "Account",
-          ),
-        ],
-      ),
+      floatingActionButton: _buildFab(page, ref, context, range, showFab),
+      bottomNavigationBar: _buildNavigationBar(page, ref),
+    );
+  }
+
+  Widget? _buildFab(
+    int page,
+    WidgetRef ref,
+    BuildContext context,
+    DateTimeRange range,
+    bool showClear,
+  ) {
+    if (page != 0) return null;
+
+    return CancellableFAB(
+      onPrimaryTapped: () => _selectRange(context, ref),
+      onCancelTapped: () => ref.invalidate(summaryRangeProvider),
+      primary: const Icon(LucideIcons.calendar),
+      cancel: const Icon(LucideIcons.x),
+      open: !_thisWeek(range) && showClear,
+    );
+  }
+
+  Widget _buildNavigationBar(int page, WidgetRef ref) {
+    return NavigationBar(
+      selectedIndex: page,
+      onDestinationSelected: (value) =>
+          ref.read(_currentPage.notifier).state = value,
+      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+      destinations: const [
+        NavigationDestination(
+          icon: Icon(LucideIcons.layoutDashboard),
+          label: "Dashboard",
+        ),
+        NavigationDestination(
+          icon: Icon(LucideIcons.code),
+          label: "Projects",
+        ),
+        NavigationDestination(
+          icon: Icon(LucideIcons.user),
+          label: "Account",
+        ),
+      ],
     );
   }
 }
-
-
-/* 
-
- */
