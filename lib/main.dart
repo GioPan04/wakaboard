@@ -38,6 +38,7 @@ Future<void> main() async {
     overrides: [
       secureStorageProvider.overrideWithValue(secureStorage),
       authApiProvider.overrideWithValue(authApi),
+      sessionManagerProvider.overrideWithValue(sessionsManager),
       packageInfoProvider.overrideWithValue(packageInfo),
       loggedUserProvider.overrideWith((ref) => auth),
     ],
