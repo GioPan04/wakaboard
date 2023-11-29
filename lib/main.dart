@@ -1,21 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutterwaka/api/auth.dart';
+import 'package:flutterwaka/api/sessions.dart';
+import 'package:flutterwaka/providers/auth.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/providers/package_info.dart';
 import 'package:flutterwaka/providers/router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:sqflite/sqflite.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final auth = await AuthApi.loadUser().onError((error, stackTrace) => null);
+  final db = await openDatabase(
+    'wakaboard.db',
+    version: 1,
+    onCreate: (db, _) => SessionsManager.create(db),
+  );
+
+  const secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
+
+  final sessionsManager = SessionsManager(db: db, tokensStorage: secureStorage);
+  final authApi = AuthApi(sessions: sessionsManager);
+
+  final auth = await authApi.autoLogin().onError((e, s) {
+    print("$e\n$s");
+    return null;
+  });
   final packageInfo = await PackageInfo.fromPlatform();
 
   runApp(ProviderScope(
     overrides: [
-      loggedUserProvider.overrideWith((ref) => auth),
+      secureStorageProvider.overrideWithValue(secureStorage),
+      authApiProvider.overrideWithValue(authApi),
       packageInfoProvider.overrideWithValue(packageInfo),
+      loggedUserProvider.overrideWith((ref) => auth),
     ],
     child: App(
       auth: auth == null,
