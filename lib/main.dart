@@ -2,18 +2,19 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutterwaka/api/auth.dart';
-import 'package:flutterwaka/models/local/dashboard_range.dart';
-import 'package:flutterwaka/models/local/settings/dashboard.dart';
+import 'package:flutterwaka/api/sessions.dart';
+import 'package:flutterwaka/providers/auth.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/providers/package_info.dart';
 import 'package:flutterwaka/providers/router.dart';
-import 'package:flutterwaka/providers/settings/dashboard.dart';
 import 'package:flutterwaka/providers/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle, rootBundle;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,14 +34,34 @@ Future<void> main() async {
     ),
   );
 
-  final auth = await AuthApi.loadUser().onError((error, stackTrace) => null);
+  final db = await openDatabase(
+    'wakaboard.db',
+    version: 1,
+    onCreate: (db, _) => SessionsManager.create(db),
+  );
+
+  const secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
+
+  final sessionsManager = SessionsManager(db: db, tokensStorage: secureStorage);
+  final authApi = AuthApi(sessions: sessionsManager);
+
+  final auth = await authApi.autoLogin().onError((e, s) {
+    print("$e\n$s");
+    return null;
+  });
   final packageInfo = await PackageInfo.fromPlatform();
 
   runApp(ProviderScope(
     overrides: [
-      loggedUserProvider.overrideWith((ref) => auth),
+      secureStorageProvider.overrideWithValue(secureStorage),
+      authApiProvider.overrideWithValue(authApi),
       packageInfoProvider.overrideWithValue(packageInfo),
       sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+      loggedUserProvider.overrideWith((ref) => auth),
     ],
     child: App(
       auth: auth == null,
