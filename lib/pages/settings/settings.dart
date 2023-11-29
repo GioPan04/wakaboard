@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -16,7 +17,7 @@ class SettingsPage extends StatelessWidget {
             leading: const Icon(LucideIcons.users),
             title: const Text('Accounts'),
             subtitle: const Text('Add or remove accounts'),
-            onTap: () {},
+            onTap: () => context.push('/settings/accounts'),
           ),
         ],
       ),

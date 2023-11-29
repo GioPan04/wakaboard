@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutterwaka/pages/settings/accounts.dart';
 import 'package:flutterwaka/pages/settings/settings.dart';
 import 'package:flutterwaka/pages/home.dart';
 import 'package:flutterwaka/pages/login.dart';
@@ -18,15 +19,19 @@ final routerProvider = Provider.family<GoRouter, bool>(
         builder: (context, state) => const HomePage(),
       ),
       GoRoute(
-        path: '/settings',
-        builder: (context, state) => const SettingsPage(),
-      ),
-      GoRoute(
         path: '/home/projects/:projectId',
         builder: (context, state) => ProjectPage(
           q: state.pathParameters['projectId']!,
         ),
       ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: '/settings/accounts',
+        builder: (context, state) => const AccountsSettingsPage(),
+      )
     ],
   ),
 );
