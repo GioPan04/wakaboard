@@ -4,12 +4,27 @@ import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/providers/package_info.dart';
 import 'package:flutterwaka/widgets/avatar.dart';
 import 'package:flutterwaka/extensions/duration.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-class ProfileDialog extends ConsumerWidget {
+class ProfileDialog extends ConsumerStatefulWidget {
   const ProfileDialog({super.key});
+
+  @override
+  ProfileDialogState createState() => ProfileDialogState();
+}
+
+class ProfileDialogState extends ConsumerState {
+  @override
+  void initState() {
+    super.initState();
+    // Refresh the values
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ref.invalidate(statsProvider);
+    });
+  }
 
   void _openLicenses(BuildContext context, PackageInfo info) {
     showLicensePage(
@@ -26,8 +41,13 @@ class ProfileDialog extends ConsumerWidget {
     launchUrlString(url);
   }
 
+  void _openSettings(BuildContext context) {
+    context.pop();
+    context.push('/settings');
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final user = ref.watch(loggedUserProvider)!.user;
     final avatar = ref.watch(profilePicProvider).valueOrNull;
     final stats = ref.watch(statsProvider).valueOrNull;
@@ -74,7 +94,7 @@ class ProfileDialog extends ConsumerWidget {
             ListTile(
               leading: const Icon(LucideIcons.settings),
               title: const Text('Settings'),
-              onTap: () {},
+              onTap: () => _openSettings(context),
             ),
             ListTile(
               leading: const Icon(LucideIcons.book),
