@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutterwaka/models/stats.dart';
 import 'package:flutterwaka/models/user.dart';
 import 'package:flutterwaka/providers/client.dart';
 
@@ -35,4 +36,11 @@ final profilePicProvider = FutureProvider<dynamic>((ref) async {
   } else {
     return res.data;
   }
+});
+
+final statsProvider = FutureProvider<Duration>((ref) async {
+  final api = ref.watch(apiProvider)!;
+  final stats = await api.getStats(StatsRange.allTime);
+
+  return stats.total;
 });

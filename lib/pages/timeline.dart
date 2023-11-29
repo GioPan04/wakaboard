@@ -6,11 +6,11 @@ import 'package:flutterwaka/providers/client.dart';
 import 'package:flutterwaka/widgets/exception.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-final _selectedDateProvider = StateProvider.autoDispose<DateTime>(
+final _selectedDateProvider = StateProvider<DateTime>(
   (ref) => DateTime.now(),
 );
 
-final _timelineProvider = FutureProvider.autoDispose<List<WakaDuration>>(
+final _timelineProvider = FutureProvider<List<WakaDuration>>(
   (ref) async {
     final api = ref.watch(apiProvider)!;
     final date = ref.watch(_selectedDateProvider);
@@ -40,40 +40,29 @@ class TimelinePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final heartbeats = ref.watch(_timelineProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Timeline'),
-        actions: [
-          IconButton(
-            onPressed: () => _selectDate(context, ref),
-            icon: const Icon(LucideIcons.calendar),
-          ),
-        ],
+    return heartbeats.when(
+      data: (h) => ListView.separated(
+        itemCount: h.length,
+        itemBuilder: (context, i) => ListTile(
+          title: Text(h[i].project),
+          subtitle: Text(h[i].duration.format),
+        ),
+        separatorBuilder: (context, i) {
+          final previousEnd = h[i].time.add(h[i].duration);
+          final pause = h[i + 1].time.difference(previousEnd);
+          return ListTile(
+            title: Text(pause.shortFormat),
+            leading: const Icon(
+              LucideIcons.watch,
+            ),
+          );
+        },
       ),
-      body: heartbeats.when(
-        data: (h) => ListView.separated(
-          itemCount: h.length,
-          itemBuilder: (context, i) => ListTile(
-            title: Text(h[i].project),
-            subtitle: Text(h[i].duration.format),
-          ),
-          separatorBuilder: (context, i) {
-            final previousEnd = h[i].time.add(h[i].duration);
-            final pause = h[i + 1].time.difference(previousEnd);
-            return ListTile(
-              title: Text(pause.shortFormat),
-              leading: const Icon(
-                LucideIcons.watch,
-              ),
-            );
-          },
-        ),
-        error: (e, s) => Center(
-          child: ExceptionButton(error: e, stacktrace: s),
-        ),
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
+      error: (e, s) => Center(
+        child: ExceptionButton(error: e, stacktrace: s),
+      ),
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }

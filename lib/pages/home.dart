@@ -2,12 +2,13 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutterwaka/pages/profile.dart';
 import 'package:flutterwaka/pages/projects.dart';
 import 'package:flutterwaka/pages/summary.dart';
+import 'package:flutterwaka/pages/timeline.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/widgets/avatar.dart';
 import 'package:flutterwaka/widgets/cancellable_fab.dart';
+import 'package:flutterwaka/widgets/dialogs/profile.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutterwaka/extensions/datetime.dart';
@@ -28,7 +29,7 @@ final _showFab = StateProvider((ref) {
 final format = DateFormat('dd/MM/yyyy');
 
 class HomePage extends ConsumerWidget {
-  static const List<String> _titles = ['This week', 'Projects', 'Profile'];
+  static const List<String> _titles = ['This week', 'Projects', 'Timeline'];
 
   const HomePage({super.key});
 
@@ -45,7 +46,9 @@ class HomePage extends ConsumerWidget {
         updatedRange ?? currentRange;
   }
 
-  void _openAccount() {}
+  void _openAccount(BuildContext context) {
+    showDialog(context: context, builder: (c) => const ProfileDialog());
+  }
 
   bool _onScroll(UserScrollNotification n, WidgetRef ref, bool current) {
     final res = switch (n.direction) {
@@ -90,7 +93,7 @@ class HomePage extends ConsumerWidget {
             padding: const EdgeInsets.only(right: 16),
             child: InkWell(
               borderRadius: BorderRadius.circular(18),
-              onTap: _openAccount,
+              onTap: () => _openAccount(context),
               child: Avatar(
                 image: avatar,
                 radius: 18,
@@ -113,7 +116,7 @@ class HomePage extends ConsumerWidget {
             child: const SummaryPage(),
           ),
           const ProjectsPage(),
-          const ProfileScreen(),
+          const TimelinePage(),
         ][page],
       ),
       floatingActionButton: _buildFab(page, ref, context, range, showFab),
@@ -155,8 +158,8 @@ class HomePage extends ConsumerWidget {
           label: "Projects",
         ),
         NavigationDestination(
-          icon: Icon(LucideIcons.user),
-          label: "Account",
+          icon: Icon(LucideIcons.gitCommit),
+          label: "Timeline",
         ),
       ],
     );
