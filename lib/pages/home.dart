@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,13 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutterwaka/extensions/datetime.dart';
 
 final _currentPage = StateProvider((ref) => 0);
+final _previousPage = StateProvider<int>((ref) {
+  ref.listen(_currentPage, (previous, next) {
+    ref.controller.state = previous ?? 0;
+  });
+
+  return 0;
+});
 final _showFab = StateProvider((ref) {
   ref.watch(summaryRangeProvider);
   return true;
@@ -65,6 +73,7 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final page = ref.watch(_currentPage);
+    final previousPage = ref.watch(_previousPage);
     final range = ref.watch(summaryRangeProvider);
     final showFab = ref.watch(_showFab);
 
@@ -72,14 +81,23 @@ class HomePage extends ConsumerWidget {
       appBar: AppBar(
         title: Text(_title(page, range)),
       ),
-      body: [
-        NotificationListener<UserScrollNotification>(
-          onNotification: (n) => _onScroll(n, ref, showFab),
-          child: const SummaryPage(),
+      body: PageTransitionSwitcher(
+        reverse: page < previousPage,
+        transitionBuilder: (child, anim, secAnim) => SharedAxisTransition(
+          animation: anim,
+          secondaryAnimation: secAnim,
+          transitionType: SharedAxisTransitionType.horizontal,
+          child: child,
         ),
-        const ProjectsPage(),
-        const ProfileScreen(),
-      ][page],
+        child: [
+          NotificationListener<UserScrollNotification>(
+            onNotification: (n) => _onScroll(n, ref, showFab),
+            child: const SummaryPage(),
+          ),
+          const ProjectsPage(),
+          const ProfileScreen(),
+        ][page],
+      ),
       floatingActionButton: page != 0
           ? null
           : CancellableFAB(
@@ -112,3 +130,8 @@ class HomePage extends ConsumerWidget {
     );
   }
 }
+
+
+/* 
+
+ */
