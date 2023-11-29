@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/pages/profile.dart';
 import 'package:flutterwaka/pages/projects.dart';
 import 'package:flutterwaka/pages/summary.dart';
+import 'package:flutterwaka/providers/logged_user.dart';
+import 'package:flutterwaka/widgets/avatar.dart';
 import 'package:flutterwaka/widgets/cancellable_fab.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -43,6 +45,8 @@ class HomePage extends ConsumerWidget {
         updatedRange ?? currentRange;
   }
 
+  void _openAccount() {}
+
   bool _onScroll(UserScrollNotification n, WidgetRef ref, bool current) {
     final res = switch (n.direction) {
       ScrollDirection.forward => true,
@@ -75,11 +79,25 @@ class HomePage extends ConsumerWidget {
     final page = ref.watch(_currentPage);
     final previousPage = ref.watch(_previousPage);
     final range = ref.watch(summaryRangeProvider);
+    final avatar = ref.watch(profilePicProvider).valueOrNull;
     final showFab = ref.watch(_showFab);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(_title(page, range)),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(18),
+              onTap: _openAccount,
+              child: Avatar(
+                image: avatar,
+                radius: 18,
+              ),
+            ),
+          )
+        ],
       ),
       body: PageTransitionSwitcher(
         reverse: page < previousPage,

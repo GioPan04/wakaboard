@@ -13,20 +13,25 @@ class Avatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return CircleAvatar(
       radius: radius,
-      child: ClipOval(
-        child: image.runtimeType == String
-            ? SvgPicture.string(
-                image,
-                fit: BoxFit.cover,
-                width: 128,
-                height: 128,
-              )
-            : Image.memory(
-                image,
-              ),
-      ),
+      backgroundColor: theme.colorScheme.secondaryContainer,
+      child: image == null
+          ? null
+          : ClipOval(
+              child: image.runtimeType == String
+                  ? SvgPicture.string(
+                      image,
+                      fit: BoxFit.cover,
+                      width: 128,
+                      height: 128,
+                    )
+                  : Image.memory(
+                      image,
+                    ),
+            ),
     );
   }
 }
