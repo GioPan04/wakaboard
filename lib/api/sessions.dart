@@ -61,6 +61,13 @@ class SessionsManager {
     );
   }
 
+  Future<int?> savedDefaultAccount() async {
+    final id = await tokensStorage.read(key: 'auth.default');
+    if (id == null) return null;
+
+    return int.parse(id);
+  }
+
   Future<Account?> _defaultAccount() async {
     final res = await db.query(_kAccountsTable, orderBy: "id ASC");
     if (res.isEmpty) return null;
@@ -74,7 +81,7 @@ class SessionsManager {
   /// it returns the first ever account available
   Future<Account?> defaultAccount() async {
     // This will fail if there is not a default user and the first one is deleted
-    final id = await tokensStorage.read(key: 'auth.default');
+    final id = await savedDefaultAccount();
     if (id == null) return _defaultAccount();
 
     final res = await db.query(
@@ -120,6 +127,21 @@ class SessionsManager {
       account: account,
       accessToken: accessToken,
       refreshToken: refreshToken,
+    );
+  }
+
+  Future<void> deleteAccount(Account account) {
+    return Future.wait([
+      db.delete(_kAccountsTable, where: 'id = ?', whereArgs: [account.id]),
+      tokensStorage.delete(key: 'auth.${account.id}.token'),
+      tokensStorage.delete(key: 'auth.${account.id}.refresh_token'),
+    ]);
+  }
+
+  Future<void> setDefault(Account account) {
+    return tokensStorage.write(
+      key: 'auth.default',
+      value: account.id.toString(),
     );
   }
 }

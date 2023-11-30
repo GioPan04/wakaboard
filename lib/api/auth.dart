@@ -41,7 +41,7 @@ class AuthApi {
   Future<AuthUser> login(String token, [String? server]) async {
     if (server != null) token = base64.encode(utf8.encode(token));
 
-    final dio = Dio(getBaseOptions(token));
+    final dio = Dio(getBaseOptions(token, server));
     final res = await dio.get('/users/current');
     final user = User.fromJson(res.data['data']);
 
