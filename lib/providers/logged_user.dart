@@ -2,18 +2,9 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutterwaka/models/stats.dart';
 import 'package:flutterwaka/models/user.dart';
 import 'package:flutterwaka/providers/client.dart';
-
-final secureStorage = Provider(
-  (ref) => const FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
-  ),
-);
 
 final loggedUserProvider = StateProvider<AuthUser?>((ref) => null);
 final profilePicProvider = FutureProvider<dynamic>((ref) async {

@@ -1,7 +1,9 @@
-# WakaBoard
+# ![WakaBoard](docs/hero.png)
+
 <img src="https://wakapi.giopan.dev/api/badge/giopan/interval:any/label:wakaboard?label=time">
 
-An open source dashboard client for WakaTime and compatible server implementations (like [Wakapi](https://github.com/muety/wakapi)).
+
+WakaBoard is an open source dashboard client for WakaTime and compatible server implementations (like [Wakapi](https://github.com/muety/wakapi)).
 
 <p align="center">
   <img src="docs/screenshots/dashboard.png" width="250">

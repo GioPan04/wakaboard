@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutterwaka/api/auth.dart';
 import 'package:flutterwaka/models/user.dart';
+import 'package:flutterwaka/providers/auth.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/services/wakatime_oauth.dart';
 import 'package:flutterwaka/widgets/exception.dart';
@@ -19,21 +19,23 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class LoginPageState extends ConsumerState<LoginPage> {
-  Future<WakatimeAuthUser> _wakatimeLogin() async {
+  Future<AuthUser> _wakatimeLogin() async {
     final accessToken = await WakaTimeOAuth.launch();
     if (accessToken == null) throw Exception('No access token');
 
-    final user = await AuthApi.wakatimeLogin(accessToken);
-    if (user == null) throw Exception('No user');
+    final authApi = ref.read(authApiProvider);
 
+    final user = await authApi.login(accessToken);
     ref.read(loggedUserProvider.notifier).state = user;
 
     return user;
   }
 
-  Future<CustomAuthUser> _customLogin(String baseUri, String token) async {
+  Future<AuthUser> _customLogin(String token, String baseUri) async {
+    final authApi = ref.read(authApiProvider);
+
     try {
-      final user = await AuthApi.customLogin(baseUri, token);
+      final user = await authApi.login(token, baseUri);
       ref.read(loggedUserProvider.notifier).state = user;
 
       return user;
