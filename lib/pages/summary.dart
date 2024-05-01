@@ -67,127 +67,150 @@ class SummaryPage extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () => ref.refresh(_summaryProvider.future),
       child: summary.when(
-        data: (s) => ListView(
-          children: [
-            if (heartbeats.valueOrNull != null) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  child: SizedBox(
-                    height: 200,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 20.0,
-                        right: 20.0,
-                        top: 18.0,
-                        bottom: 14.0,
-                      ),
-                      child: HeartbeatsChart(
-                        hours: heartbeats.valueOrNull!.hours,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-            ],
-            if (!range.start.isSameDay(range.end)) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  child: SizedBox(
-                    height: 200,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 20.0,
-                        right: 20.0,
-                        top: 18.0,
-                        bottom: 14.0,
-                      ),
-                      child: SummaryChart(days: s.summary.days),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 6),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: DashboardWidget(
-                        label: 'Daily average',
-                        color: theme.colorScheme.secondary,
-                        value: s.summary.dailyAverage.text,
-                        icon: LucideIcons.barChart2,
+        data: (s) => s.summary.comulativeTotal.inSeconds > 0
+            ? ListView(
+                children: [
+                  if (heartbeats.valueOrNull != null) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        child: SizedBox(
+                          height: 200,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              left: 20.0,
+                              right: 20.0,
+                              top: 18.0,
+                              bottom: 14.0,
+                            ),
+                            child: HeartbeatsChart(
+                              hours: heartbeats.valueOrNull!.hours,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(
-                      width: 6,
+                      height: 24,
                     ),
-                    Expanded(
-                      child: DashboardWidget(
-                        label: 'Total',
-                        color: theme.colorScheme.tertiary,
-                        value: s.summary.comulativeTotal.format,
-                        icon: LucideIcons.barChart,
+                  ],
+                  if (!range.start.isSameDay(range.end)) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        child: SizedBox(
+                          height: 200,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              left: 20.0,
+                              right: 20.0,
+                              top: 18.0,
+                              bottom: 14.0,
+                            ),
+                            child: SummaryChart(days: s.summary.days),
+                          ),
+                        ),
                       ),
+                    ),
+                    const SizedBox(height: 6),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: DashboardWidget(
+                              label: 'Daily average',
+                              color: theme.colorScheme.secondary,
+                              value: s.summary.dailyAverage.text,
+                              icon: LucideIcons.barChart2,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 6,
+                          ),
+                          Expanded(
+                            child: DashboardWidget(
+                              label: 'Total',
+                              color: theme.colorScheme.tertiary,
+                              value: s.summary.comulativeTotal.format,
+                              icon: LucideIcons.barChart,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 24,
+                    ),
+                  ],
+                  ScrollableCategories(
+                    items: SummaryFilter.values,
+                    getLabel: (v) => v.label,
+                    onItemPressed: (f) =>
+                        ref.read(_filterProvider.notifier).state = f,
+                    selected: (f) => f == filter,
+                  ),
+                  ...data[filter]!
+                      .map(
+                        (e) => ListTile(
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 16),
+                          title: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  e.name,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Text(
+                                e.duration.shortFormat,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
+                          subtitle: LinearProgressIndicator(
+                            value: e.percent / 100,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  // FAB space
+                  const SizedBox(
+                    height: 112,
+                  ),
+                ],
+              )
+            : Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      LucideIcons.circleSlash,
+                      size: 48,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'No data',
+                      style: theme.textTheme.bodyLarge,
+                    ),
+                    Text(
+                      'There is no data in the selected period.\nUse the button below to select another period',
+                      style: theme.textTheme.bodySmall,
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 24,
-              ),
-            ],
-            ScrollableCategories(
-              items: SummaryFilter.values,
-              getLabel: (v) => v.label,
-              onItemPressed: (f) =>
-                  ref.read(_filterProvider.notifier).state = f,
-              selected: (f) => f == filter,
-            ),
-            ...data[filter]!
-                .map(
-                  (e) => ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    title: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            e.name,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        Text(
-                          e.duration.shortFormat,
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                    subtitle: LinearProgressIndicator(
-                      value: e.percent / 100,
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                )
-                .toList(),
-            // FAB space
-            const SizedBox(
-              height: 112,
-            ),
-          ],
-        ),
         error: (e, s) => Center(
           child: ExceptionButton(
             error: e,
