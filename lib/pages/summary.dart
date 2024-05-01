@@ -11,6 +11,7 @@ import 'package:flutterwaka/widgets/exception.dart';
 import 'package:flutterwaka/widgets/charts/summary.dart';
 import 'package:flutterwaka/widgets/scrollable_categories.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 final summaryRangeProvider = StateProvider<DateTimeRange>((ref) {
   final today = DateTime.now();
@@ -128,6 +129,7 @@ class SummaryPage extends ConsumerWidget {
                         label: 'Daily average',
                         color: theme.colorScheme.secondary,
                         value: s.summary.dailyAverage.text,
+                        icon: LucideIcons.barChart2,
                       ),
                     ),
                     const SizedBox(
@@ -138,6 +140,7 @@ class SummaryPage extends ConsumerWidget {
                         label: 'Total',
                         color: theme.colorScheme.tertiary,
                         value: s.summary.comulativeTotal.format,
+                        icon: LucideIcons.barChart,
                       ),
                     ),
                   ],

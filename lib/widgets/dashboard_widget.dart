@@ -5,12 +5,14 @@ class DashboardWidget extends StatelessWidget {
   final String label;
   final Color color;
   final String value;
+  final IconData? icon;
 
   const DashboardWidget({
     super.key,
     required this.label,
     required this.color,
     required this.value,
+    this.icon = LucideIcons.trendingUp,
   });
 
   @override
@@ -33,8 +35,8 @@ class DashboardWidget extends StatelessWidget {
                 color: theme.colorScheme.background,
               ),
               padding: const EdgeInsets.all(6.0),
-              child: const Icon(
-                LucideIcons.trendingUp,
+              child: Icon(
+                icon,
                 size: 20,
               ),
             ),
