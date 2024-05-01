@@ -50,6 +50,7 @@ dependencies:
   flutter_svg: ^2.0.9
   package_info_plus: ^4.2.0
   animations: ^2.0.8
+  dynamic_color: ^1.7.0
 
 dev_dependencies:
   flutter_test:
