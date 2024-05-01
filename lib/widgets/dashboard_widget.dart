@@ -38,7 +38,7 @@ class DashboardWidget extends StatelessWidget {
                 size: 20,
               ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 30),
             Text(
               label,
               style: theme.textTheme.labelSmall?.copyWith(
