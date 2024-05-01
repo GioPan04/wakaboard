@@ -1,4 +1,5 @@
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/api/auth.dart';
@@ -6,9 +7,23 @@ import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/providers/package_info.dart';
 import 'package:flutterwaka/providers/router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Add Montserrat font license to licenses page
+  final montserratLicense = await rootBundle.loadString(
+    'assets/fonts/montserrat/LICENSE.txt',
+  );
+  LicenseRegistry.addLicense(
+    () => Stream<LicenseEntry>.value(
+      LicenseEntryWithLineBreaks(
+        <String>['Montserrat'],
+        montserratLicense,
+      ),
+    ),
+  );
 
   final auth = await AuthApi.loadUser().onError((error, stackTrace) => null);
   final packageInfo = await PackageInfo.fromPlatform();
@@ -60,10 +75,12 @@ class App extends ConsumerWidget {
         return MaterialApp.router(
           title: 'Flutter Waka',
           darkTheme: ThemeData(
+            fontFamily: "Montserrat",
             useMaterial3: true,
             colorScheme: darkDynamic ?? compatDarkScheme,
           ),
           theme: ThemeData(
+            fontFamily: "Montserrat",
             colorScheme: lightDynamic ?? compatLightScheme,
             useMaterial3: true,
           ),
