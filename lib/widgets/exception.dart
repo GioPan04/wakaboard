@@ -85,10 +85,10 @@ class ExceptionDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(error.toString()),
+      title: const Text("An error occured"),
       content: SingleChildScrollView(
         child: Text(
-          stacktrace.toString(),
+          "${error.toString()}\n\n${stacktrace.toString()}",
           style: Theme.of(context)
               .textTheme
               .bodySmall
