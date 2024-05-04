@@ -45,7 +45,9 @@ final _filterProvider = StateProvider<SummaryFilter>(
 final format = DateFormat('dd/MM/yyyy');
 
 class SummaryPage extends ConsumerWidget {
-  const SummaryPage({super.key});
+  final VoidCallback? onSelectPeriod;
+
+  const SummaryPage({this.onSelectPeriod, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -204,10 +206,15 @@ class SummaryPage extends ConsumerWidget {
                       style: theme.textTheme.bodyLarge,
                     ),
                     Text(
-                      'There is no data in the selected period.\nUse the button below to select another period',
+                      'There is no data in the selected period',
                       style: theme.textTheme.bodySmall,
                       textAlign: TextAlign.center,
                     ),
+                    const SizedBox(height: 12),
+                    OutlinedButton(
+                      onPressed: onSelectPeriod,
+                      child: const Text('Select another period'),
+                    )
                   ],
                 ),
               ),

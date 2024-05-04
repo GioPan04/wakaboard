@@ -113,7 +113,9 @@ class HomePage extends ConsumerWidget {
         child: [
           NotificationListener<UserScrollNotification>(
             onNotification: (n) => _onScroll(n, ref, showFab),
-            child: const SummaryPage(),
+            child: SummaryPage(
+              onSelectPeriod: () => _selectRange(context, ref),
+            ),
           ),
           const ProjectsPage(),
           const TimelinePage(),
