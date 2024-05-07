@@ -8,6 +8,7 @@ import 'package:flutterwaka/providers/package_info.dart';
 import 'package:flutterwaka/providers/router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle, rootBundle;
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -76,6 +77,12 @@ class App extends ConsumerWidget {
         final lightScheme = lightDynamic ?? compatLightScheme;
 
         return MaterialApp.router(
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('it'), Locale('en')],
           title: 'Flutter Waka',
           darkTheme: ThemeData(
             fontFamily: "Montserrat",
