@@ -113,6 +113,7 @@ class HomePage extends ConsumerWidget {
       ),
       body: PageTransitionSwitcher(
         reverse: page < previousPage,
+        duration: Durations.long1,
         transitionBuilder: (child, anim, secAnim) => SharedAxisTransition(
           animation: anim,
           secondaryAnimation: secAnim,
@@ -158,7 +159,7 @@ class HomePage extends ConsumerWidget {
       selectedIndex: page,
       onDestinationSelected: (value) =>
           ref.read(_currentPage.notifier).state = value,
-      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+      // labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
       destinations: const [
         NavigationDestination(
           icon: Icon(LucideIcons.layoutDashboard),
