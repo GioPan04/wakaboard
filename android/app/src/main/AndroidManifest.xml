@@ -20,7 +20,8 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:label="WakaBoard"
-        android:enableOnBackInvokedCallback="true">
+        android:enableOnBackInvokedCallback="true"
+        android:localeConfig="@xml/locale_config">
 
         <activity
             android:name=".MainActivity"
