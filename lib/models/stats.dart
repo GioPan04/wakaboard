@@ -59,12 +59,17 @@ class DayStats {
       _$DayStatsFromJson(json);
 }
 
-class StatsRange {
-  static const last7Days = 'last_7_days';
-  static const last30Days = 'last_30_days';
-  static const last6Months = 'last_6_months';
-  static const lastYear = 'last_year';
-  static const allTime = 'all_time';
+enum StatsRange {
+  last7Days('last_7_days', 'Last 7 days'),
+  last30Days('last_30_days', 'Last 30 days'),
+  last6Months('last_6_months', 'Last 7 months'),
+  lastYear('last_year', 'Last year'),
+  allTime('all_time', 'All time');
+
+  const StatsRange(this.value, this.label);
+
+  final String value;
+  final String label;
 
   static final _rangeFormat = DateFormat('yyyy-MM');
 

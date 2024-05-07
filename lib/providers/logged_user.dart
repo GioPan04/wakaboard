@@ -40,7 +40,7 @@ final profilePicProvider = FutureProvider<dynamic>((ref) async {
 
 final statsProvider = FutureProvider<Duration>((ref) async {
   final api = ref.watch(apiProvider)!;
-  final stats = await api.getStats(StatsRange.allTime);
+  final stats = await api.getStats(StatsRange.allTime.value);
 
   return stats.total;
 });

@@ -5,6 +5,8 @@ import 'package:flutterwaka/extensions/duration.dart';
 import 'package:flutterwaka/models/dto/hourly_heartbeats.dart';
 import 'package:flutterwaka/models/dto/summary.dart';
 import 'package:flutterwaka/providers/client.dart';
+import 'package:flutterwaka/providers/localization.dart';
+import 'package:flutterwaka/providers/settings/dashboard.dart';
 import 'package:flutterwaka/widgets/charts/heartbeats.dart';
 import 'package:flutterwaka/widgets/dashboard_widget.dart';
 import 'package:flutterwaka/widgets/exception.dart';
@@ -14,10 +16,19 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 final summaryRangeProvider = StateProvider<DateTimeRange>((ref) {
-  final today = DateTime.now();
-  final start = today.subtract(const Duration(days: 6));
+  final locale = ref.watch(localeProvider);
+  final localization = DateFormat.yMMMMEEEEd(Intl.canonicalizedLocale(
+    locale.toString(),
+  ));
 
-  return DateTimeRange(start: start, end: today);
+  final range = ref.watch(dashboardSettingsProvider).range;
+  final today = DateTime.now();
+
+  return DateTimeRange(
+    start: range.buildRange(
+        today, (localization.dateSymbols.FIRSTDAYOFWEEK + 1) % 7),
+    end: today,
+  );
 });
 
 final _summaryProvider = FutureProvider<SummaryDTO>((ref) async {
