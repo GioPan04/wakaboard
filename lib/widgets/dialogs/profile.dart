@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/providers/package_info.dart';
@@ -55,71 +56,81 @@ class ProfileDialogState extends ConsumerState {
 
     final theme = Theme.of(context);
 
-    return Dialog(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: [
-                  Avatar(
-                    image: avatar,
-                    radius: 28,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          user.fullName ?? user.username,
-                          style: theme.textTheme.titleMedium,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          stats?.format ?? '0 hrs 0 mins',
-                          overflow: TextOverflow.ellipsis,
-                        )
-                      ],
-                    ),
-                  ),
-                  const Icon(LucideIcons.chevronDown),
-                ],
-              ),
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(LucideIcons.settings),
-              title: const Text('Settings'),
-              onTap: () => _openSettings(context),
-            ),
-            ListTile(
-              leading: const Icon(LucideIcons.book),
-              title: const Text('Licenses'),
-              onTap: () => _openLicenses(context, packageInfo),
-            ),
-            ListTile(
-              leading: const Icon(LucideIcons.github),
-              title: const Text('Contribute on GitHub'),
-              onTap: () => _openContribute(),
-            ),
-            const Divider(),
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: DefaultTextStyle(
-                style: theme.textTheme.bodySmall!,
-                child: Column(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        systemNavigationBarColor: ElevationOverlay.applySurfaceTint(
+          theme.colorScheme.surface,
+          Colors.black54, // dialog barrier color
+          6.0, // dialog elevation
+        ),
+      ),
+      child: Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
                   children: [
-                    Text(packageInfo.appName),
-                    Text("${packageInfo.version} (${packageInfo.buildNumber})"),
+                    Avatar(
+                      image: avatar,
+                      radius: 28,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            user.fullName ?? user.username,
+                            style: theme.textTheme.titleMedium,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            stats?.format ?? '0 hrs 0 mins',
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        ],
+                      ),
+                    ),
+                    const Icon(LucideIcons.chevronDown),
                   ],
                 ),
               ),
-            )
-          ],
+              const Divider(),
+              ListTile(
+                leading: const Icon(LucideIcons.settings),
+                title: const Text('Settings'),
+                onTap: () => _openSettings(context),
+              ),
+              ListTile(
+                leading: const Icon(LucideIcons.book),
+                title: const Text('Licenses'),
+                onTap: () => _openLicenses(context, packageInfo),
+              ),
+              ListTile(
+                leading: const Icon(LucideIcons.github),
+                title: const Text('Contribute on GitHub'),
+                onTap: () => _openContribute(),
+              ),
+              const Divider(),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: DefaultTextStyle(
+                  style: theme.textTheme.bodySmall!,
+                  child: Column(
+                    children: [
+                      Text(packageInfo.appName),
+                      Text(
+                          "${packageInfo.version} (${packageInfo.buildNumber})"),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

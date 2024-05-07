@@ -7,7 +7,7 @@ import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/providers/package_info.dart';
 import 'package:flutterwaka/providers/router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart' show SystemUiOverlayStyle, rootBundle;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -72,17 +72,30 @@ class App extends ConsumerWidget {
           );
         }
 
+        final darkScheme = darkDynamic ?? compatDarkScheme;
+        final lightScheme = lightDynamic ?? compatLightScheme;
+
         return MaterialApp.router(
           title: 'Flutter Waka',
           darkTheme: ThemeData(
             fontFamily: "Montserrat",
             useMaterial3: true,
-            colorScheme: darkDynamic ?? compatDarkScheme,
+            colorScheme: darkScheme,
+            appBarTheme: AppBarTheme(
+              systemOverlayStyle: SystemUiOverlayStyle(
+                systemNavigationBarColor: darkScheme?.background,
+              ),
+            ),
           ),
           theme: ThemeData(
             fontFamily: "Montserrat",
-            colorScheme: lightDynamic ?? compatLightScheme,
+            colorScheme: lightScheme,
             useMaterial3: true,
+            appBarTheme: AppBarTheme(
+              systemOverlayStyle: SystemUiOverlayStyle(
+                systemNavigationBarColor: lightScheme?.background,
+              ),
+            ),
           ),
           routerConfig: router,
         );
