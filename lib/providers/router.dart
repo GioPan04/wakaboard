@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/pages/intro/welcome.dart';
-import 'package:flutterwaka/pages/settings/accounts.dart';
 import 'package:flutterwaka/pages/settings/dashboard.dart';
 import 'package:flutterwaka/pages/settings/settings.dart';
 import 'package:flutterwaka/pages/home.dart';
