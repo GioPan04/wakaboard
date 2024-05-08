@@ -1,40 +1,15 @@
 import 'package:dio/dio.dart';
+import 'package:flutterwaka/models/local/session.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'user.g.dart';
 
-abstract class AuthUser {
+class AuthUser {
   final User user;
-  final String token;
+  final Session session;
 
-  AuthUser(this.user, this.token);
+  AuthUser(this.user, this.session);
 
-  BaseOptions get dioBaseOptions;
-}
-
-class WakatimeAuthUser extends AuthUser {
-  WakatimeAuthUser(User user, String token) : super(user, token);
-
-  @override
-  BaseOptions get dioBaseOptions => BaseOptions(
-        baseUrl: 'https://wakatime.com/api/v1',
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-}
-
-class CustomAuthUser extends AuthUser {
-  final String baseUri;
-
-  CustomAuthUser(User user, String token, this.baseUri) : super(user, token);
-
-  @override
-  BaseOptions get dioBaseOptions => BaseOptions(
-        baseUrl: baseUri,
-        headers: {
-          'Authorization': 'Basic $token',
-        },
-      );
+  BaseOptions get dioBaseOptions => session.dioBaseOptions;
 }
 
 @JsonSerializable(createToJson: false)
