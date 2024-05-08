@@ -3,8 +3,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'account.freezed.dart';
 part 'account.g.dart';
 
-enum AccountType { wakatime, custom }
-
 @freezed
 sealed class Account with _$Account {
   const factory Account() = AccountData;

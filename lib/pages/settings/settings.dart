@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutterwaka/api/auth.dart';
-import 'package:flutterwaka/models/local/account.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/widgets/dialogs/confirm_logout.dart';
 import 'package:go_router/go_router.dart';
