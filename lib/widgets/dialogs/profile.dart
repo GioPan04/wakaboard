@@ -71,12 +71,12 @@ class ProfileDialogState extends ConsumerState {
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
                 child: Row(
                   children: [
                     Avatar(
                       image: avatar,
-                      radius: 28,
+                      radius: 24,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -95,7 +95,6 @@ class ProfileDialogState extends ConsumerState {
                         ],
                       ),
                     ),
-                    const Icon(LucideIcons.chevronDown),
                   ],
                 ),
               ),

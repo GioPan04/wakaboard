@@ -14,12 +14,6 @@ class SettingsPage extends StatelessWidget {
       body: ListView(
         children: [
           ListTile(
-            leading: const Icon(LucideIcons.users),
-            title: const Text('Accounts'),
-            subtitle: const Text('Add or remove accounts'),
-            onTap: () => context.push('/settings/accounts'),
-          ),
-          ListTile(
             leading: const Icon(LucideIcons.layoutDashboard),
             title: const Text('Dashboard'),
             subtitle: const Text('Set your preferences for the dashboard'),

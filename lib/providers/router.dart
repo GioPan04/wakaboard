@@ -35,10 +35,6 @@ final routerProvider = Provider.family<GoRouter, bool>(
         builder: (context, state) => const SettingsPage(),
       ),
       GoRoute(
-        path: '/settings/accounts',
-        builder: (context, state) => const AccountsSettingsPage(),
-      ),
-      GoRoute(
         path: '/settings/dashboard',
         builder: (context, state) => const DashboardSettingsPage(),
       ),
