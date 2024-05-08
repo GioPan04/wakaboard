@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/api/auth.dart';
+import 'package:flutterwaka/models/local/account.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/widgets/dialogs/confirm_logout.dart';
 import 'package:go_router/go_router.dart';
@@ -11,6 +12,7 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authApi = ref.read(authApiProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -34,7 +36,7 @@ class SettingsPage extends ConsumerWidget {
               );
 
               if (res) {
-                await AuthApi.logout();
+                await authApi.logout();
                 ref.read(loggedUserProvider.notifier).state = null;
                 if (!context.mounted) return;
                 context.go('/login');

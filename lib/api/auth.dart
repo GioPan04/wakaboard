@@ -2,44 +2,38 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutterwaka/models/local/account.dart';
 import 'package:flutterwaka/models/user.dart';
 
 class AuthApi {
-  static const String accessTokenKey = 'auth.token';
-  static const String apiUriKey = 'auth.server';
+  final Dio dio;
+  final FlutterSecureStorage storage;
 
-  static const _secureStorage = FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
-  );
+  const AuthApi(this.dio, this.storage);
 
-  /// Reads user credentials and returns the user. If `AuthUser` is null the
-  /// login screen should be displayed
-  static Future<AuthUser?> loadUser() async {
-    final token = await _secureStorage.read(key: accessTokenKey);
-    if (token == null) return null;
-    final base = await _secureStorage.read(key: apiUriKey);
-    if (base == null) {
-      return _wakatimeLogin(token);
-    } else {
-      return _customLogin(token, base);
-    }
+  Future<void> _save(Account account) {
+    final json = jsonEncode(account.toJson());
+    return storage.write(key: 'auth.account', value: json);
   }
 
-  static Future<WakatimeAuthUser?> _wakatimeLogin(String token) async {
+  Future<Account?> load() async {
+    final json = await storage.read(key: 'auth.account');
+    if (json == null) return null;
+
+    return Account.fromJson(jsonDecode(json));
+  }
+
+  Future<User> _wakatimeLogin(String accessToken) async {
     final dio = Dio(BaseOptions(
       headers: {
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $accessToken',
       },
     ));
     final res = await dio.get('https://wakatime.com/api/v1/users/current');
-    final user = User.fromJson(res.data['data']);
-
-    return WakatimeAuthUser(user, token);
+    return User.fromJson(res.data['data']);
   }
 
-  static Future<CustomAuthUser> _customLogin(String token, String uri) async {
+  Future<User> _customLogin(String uri, String token) async {
     final dio = Dio(BaseOptions(
       baseUrl: uri,
       headers: {
@@ -47,29 +41,26 @@ class AuthApi {
       },
     ));
     final res = await dio.get('/users/current');
-    final user = User.fromJson(res.data['data']);
-
-    return CustomAuthUser(user, token, uri);
+    return User.fromJson(res.data['data']);
   }
 
-  static Future<WakatimeAuthUser?> wakatimeLogin(String token) async {
-    final user = await _wakatimeLogin(token);
-    if (user == null) return null;
-    await _secureStorage.write(key: accessTokenKey, value: token);
+  Future<User> login(Account account) {
+    return switch (account) {
+      AccountWakatime(:final accessToken) => _wakatimeLogin(accessToken),
+      AccountCustom(:final serverUrl, :final apiKey) =>
+        _customLogin(serverUrl, apiKey),
+      AccountData() => throw UnimplementedError(),
+    };
+  }
+
+  Future<User> logon(Account account) async {
+    final user = await login(account);
+    await _save(account);
+
     return user;
   }
 
-  static Future<CustomAuthUser> customLogin(String token, String base) async {
-    final converted = base64.encode(utf8.encode(token));
-    final user = await _customLogin(converted, base);
-
-    await _secureStorage.write(key: accessTokenKey, value: converted);
-    await _secureStorage.write(key: apiUriKey, value: base);
-    return user;
-  }
-
-  static Future<void> logout() async {
-    await _secureStorage.delete(key: accessTokenKey);
-    await _secureStorage.delete(key: apiUriKey);
+  Future<void> logout() {
+    return storage.delete(key: 'auth.account');
   }
 }

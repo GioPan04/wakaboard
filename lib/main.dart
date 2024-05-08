@@ -1,10 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutterwaka/api/auth.dart';
 import 'package:flutterwaka/models/local/dashboard_range.dart';
 import 'package:flutterwaka/models/local/settings/dashboard.dart';
+import 'package:flutterwaka/models/user.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/providers/package_info.dart';
 import 'package:flutterwaka/providers/router.dart';
@@ -17,8 +20,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  final sharedPreferences = await SharedPreferences.getInstance();
 
   // Add Montserrat font license to licenses page
   final montserratLicense = await rootBundle.loadString(
@@ -33,17 +34,31 @@ Future<void> main() async {
     ),
   );
 
-  final auth = await AuthApi.loadUser().onError((error, stackTrace) => null);
+  final sharedPreferences = await SharedPreferences.getInstance();
+  const secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
+
+  final authApi = AuthApi(Dio(), secureStorage);
+  final account = await authApi.load();
   final packageInfo = await PackageInfo.fromPlatform();
+
+  AuthUser? user;
+  if (account != null) {
+    user = AuthUser(await authApi.login(account), account);
+  }
 
   runApp(ProviderScope(
     overrides: [
-      loggedUserProvider.overrideWith((ref) => auth),
+      loggedUserProvider.overrideWith((ref) => user),
       packageInfoProvider.overrideWithValue(packageInfo),
       sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+      secureStorageProvider.overrideWithValue(secureStorage),
     ],
     child: App(
-      auth: auth == null,
+      auth: account == null,
     ),
   ));
 }

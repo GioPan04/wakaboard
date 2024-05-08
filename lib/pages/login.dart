@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/api/auth.dart';
+import 'package:flutterwaka/models/local/account.dart';
 import 'package:flutterwaka/models/user.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
 import 'package:flutterwaka/services/wakatime_oauth.dart';
@@ -19,24 +21,24 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class LoginPageState extends ConsumerState<LoginPage> {
-  Future<WakatimeAuthUser> _wakatimeLogin() async {
+  Future<void> _wakatimeLogin(AuthApi api) async {
     final accessToken = await WakaTimeOAuth.launch();
     if (accessToken == null) throw Exception('No access token');
 
-    final user = await AuthApi.wakatimeLogin(accessToken);
-    if (user == null) throw Exception('No user');
+    final account = Account.wakatime(accessToken: accessToken);
+    final user = await api.logon(account);
 
-    ref.read(loggedUserProvider.notifier).state = user;
-
-    return user;
+    ref.read(loggedUserProvider.notifier).state = AuthUser(user, account);
   }
 
-  Future<CustomAuthUser> _customLogin(String baseUri, String token) async {
+  Future<void> _customLogin(AuthApi api, String baseUri, String token) async {
     try {
-      final user = await AuthApi.customLogin(baseUri, token);
-      ref.read(loggedUserProvider.notifier).state = user;
-
-      return user;
+      final account = Account.custom(
+        serverUrl: baseUri,
+        apiKey: base64Encode(utf8.encode(token)),
+      );
+      final user = await api.logon(account);
+      ref.read(loggedUserProvider.notifier).state = AuthUser(user, account);
     } catch (e, s) {
       if (!mounted) rethrow;
 
@@ -68,6 +70,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final customServer = ref.watch(_customServerProvider);
+    final authApi = ref.read(authApiProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -90,9 +93,8 @@ class LoginPageState extends ConsumerState<LoginPage> {
                       ? [
                           FilledButton(
                             onPressed: () {
-                              final future = _wakatimeLogin().then(
-                                (user) => context.go('/home'),
-                              );
+                              final future = _wakatimeLogin(authApi)
+                                  .then((_) => context.go('/home'));
 
                               setState(() {
                                 _loginFuture = future;
@@ -148,11 +150,10 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                 .state = true
                             : () {
                                 final future = _customLogin(
-                                  _apiTokenController.text,
+                                  authApi,
                                   _baseApiUriController.text,
-                                ).then(
-                                  (user) => context.go('/home'),
-                                );
+                                  _apiTokenController.text,
+                                ).then((_) => context.go('/home'));
 
                                 setState(() {
                                   _loginFuture = future;

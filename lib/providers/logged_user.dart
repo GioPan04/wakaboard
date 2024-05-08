@@ -3,16 +3,20 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutterwaka/api/auth.dart';
 import 'package:flutterwaka/models/stats.dart';
 import 'package:flutterwaka/models/user.dart';
 import 'package:flutterwaka/providers/client.dart';
 
-final secureStorage = Provider(
-  (ref) => const FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
-  ),
+final secureStorageProvider = Provider<FlutterSecureStorage>(
+  (ref) => throw Exception('Not yet initialized'),
+);
+
+final authApiProvider = Provider(
+  (ref) {
+    final storage = ref.read(secureStorageProvider);
+    return AuthApi(Dio(), storage);
+  },
 );
 
 final loggedUserProvider = StateProvider<AuthUser?>((ref) => null);
