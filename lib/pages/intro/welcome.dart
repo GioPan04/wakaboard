@@ -26,6 +26,12 @@ class _WelcomeIntroPageState extends State<WelcomeIntroPage>
   }
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
