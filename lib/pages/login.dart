@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/api/auth.dart';
+import 'package:flutterwaka/api/wakatime.dart';
 import 'package:flutterwaka/models/local/account.dart';
 import 'package:flutterwaka/models/user.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
@@ -22,13 +23,35 @@ class LoginPage extends ConsumerStatefulWidget {
 
 class LoginPageState extends ConsumerState<LoginPage> {
   Future<void> _wakatimeLogin(AuthApi api) async {
-    final accessToken = await WakaTimeOAuth.launch();
-    if (accessToken == null) throw Exception('No access token');
+    try {
+      final code = await WakaTimeOAuth.launch();
+      if (code == null) throw Exception('No access token');
 
-    final account = Account.wakatime(accessToken: accessToken);
-    final user = await api.logon(account);
+      final account = await WakaTimeApi.getToken(code);
+      final user = await api.logon(account);
 
-    ref.read(loggedUserProvider.notifier).state = AuthUser(user, account);
+      ref.read(loggedUserProvider.notifier).state = AuthUser(user, account);
+    } catch (e, s) {
+      if (!mounted) rethrow;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('An error occured'),
+          action: SnackBarAction(
+            label: "Details",
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => ExceptionDialog(
+                error: e,
+                stacktrace: s,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      rethrow;
+    }
   }
 
   Future<void> _customLogin(AuthApi api, String baseUri, String token) async {

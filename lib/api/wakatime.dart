@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutterwaka/models/commit.dart';
+import 'package:flutterwaka/models/config/wakatime_config.dart';
 import 'package:flutterwaka/models/duration.dart';
 import 'package:flutterwaka/models/heartbeat.dart';
+import 'package:flutterwaka/models/local/account.dart';
 import 'package:flutterwaka/models/project.dart';
 import 'package:flutterwaka/models/stats.dart';
 import 'package:flutterwaka/models/summary.dart';
@@ -13,6 +15,31 @@ class WakaTimeApi {
   WakaTimeApi({required this.client});
 
   final _dateFormat = DateFormat('y-MM-dd');
+
+  static Future<Account> getToken(String code) async {
+    final res = await Dio().post(
+      'https://wakatime.com/oauth/token',
+      options: Options(
+        contentType: Headers.jsonContentType,
+        headers: {
+          Headers.acceptHeader: Headers.jsonContentType,
+        },
+      ),
+      data: {
+        'client_id': WakaTimeConfig.appId,
+        'client_secret': WakaTimeConfig.appSecret,
+        'redirect_uri': WakaTimeConfig.redirect,
+        'grant_type': 'authorization_code',
+        'code': code
+      },
+    );
+
+    return Account.wakatime(
+      accessToken: res.data['access_token'],
+      refreshToken: res.data['refresh_token'],
+      tokenExpire: DateTime.parse(res.data['expires_at']),
+    );
+  }
 
   /// Fetch the user's summary from a given range.
   Future<Summary> getSummary(

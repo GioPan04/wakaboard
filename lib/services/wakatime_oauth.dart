@@ -1,24 +1,15 @@
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+import 'package:flutterwaka/models/config/wakatime_config.dart';
 
 class WakaTimeOAuth {
-  static const appId = 'MBzCVc9hyiqz6KKQjKSJZ2tM';
-  static const redirect = 'flutterwaka://auth/redirect';
-  static const scopes = [
-    'email',
-    'read_logged_time',
-    'read_stats',
-    'read_orgs',
-    'read_private_leaderboards'
-  ];
-
   static final url = Uri.https(
     'wakatime.com',
     '/oauth/authorize',
     {
-      'client_id': appId,
-      'redirect_uri': redirect,
-      'scope': scopes.join(','),
-      'response_type': 'token',
+      'client_id': WakaTimeConfig.appId,
+      'redirect_uri': WakaTimeConfig.redirect,
+      'scope': WakaTimeConfig.scopes.join(','),
+      'response_type': 'code',
     },
   );
 
@@ -30,18 +21,7 @@ class WakaTimeOAuth {
       callbackUrlScheme: 'flutterwaka',
     );
 
-    final params = _parseUri(res, redirect);
-    return params['access_token'];
-  }
-
-  static Map<String, String> _parseUri(String uri, String redirect) {
-    final paramList = uri.replaceFirst('$redirect#', '').split('&');
-    final params = <String, String>{};
-    for (final p in paramList) {
-      final param = p.split('=');
-      params[param[0]] = param[1];
-    }
-
-    return params;
+    final params = Uri.parse(res);
+    return params.queryParameters['code'];
   }
 }
