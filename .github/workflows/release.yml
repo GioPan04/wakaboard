@@ -32,9 +32,11 @@ jobs:
       - name: "Get dependencies"
         run: flutter pub get
       - name: "Build"
+        env:
+          WAKABOARD_CLIENT_SECRET: ${{ secrets.WAKABOARD_CLIENT_SECRET }}
         run: |
           dart run build_runner build --delete-conflicting-outputs
-          flutter build apk --split-per-abi --dart-define WAKABOARD_CLIENT_SECRET=${WAKABOARD_CLIENT_SECRET}
+          flutter build apk --split-per-abi --dart-define WAKABOARD_CLIENT_SECRET="$WAKABOARD_CLIENT_SECRET"
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
