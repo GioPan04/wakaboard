@@ -95,106 +95,114 @@ class LoginPageState extends ConsumerState<LoginPage> {
     final customServer = ref.watch(_customServerProvider);
     final authApi = ref.read(authApiProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Center(
-          child: FutureBuilder(
-            future: _loginFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              }
+    return PopScope(
+      canPop: !customServer,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          ref.read(_customServerProvider.notifier).state = false;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Login'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Center(
+            child: FutureBuilder(
+              future: _loginFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                }
 
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ...!customServer
-                      ? [
-                          FilledButton(
-                            onPressed: () {
-                              final future = _wakatimeLogin(authApi)
-                                  .then((_) => context.go('/home'));
-
-                              setState(() {
-                                _loginFuture = future;
-                              });
-                            },
-                            child: const Text('Login with WakaTime'),
-                          ),
-                          const SizedBox(height: 8.0),
-                          Text(
-                            'Login with your WakaTime account hosted on wakatime.com',
-                            style: theme.textTheme.bodySmall,
-                            textAlign: TextAlign.center,
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12.0),
-                            child: OrSeparator(),
-                          ),
-                        ]
-                      : [
-                          TextField(
-                            controller: _baseApiUriController,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: "Base API URI",
-                              hintText:
-                                  "https://example.com/api/compat/wakatime/v1",
-                            ),
-                          ),
-                          const SizedBox(height: 8.0),
-                          TextField(
-                            controller: _apiTokenController,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: "API token",
-                            ),
-                          ),
-                          const SizedBox(height: 8.0),
-                        ],
-                  Row(
-                    mainAxisAlignment: !customServer
-                        ? MainAxisAlignment.center
-                        : MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (customServer)
-                        BackButton(
-                            onPressed: () => ref
-                                .read(_customServerProvider.notifier)
-                                .state = false),
-                      FilledButton(
-                        onPressed: !customServer
-                            ? () => ref
-                                .read(_customServerProvider.notifier)
-                                .state = true
-                            : () {
-                                final future = _customLogin(
-                                  authApi,
-                                  _baseApiUriController.text,
-                                  _apiTokenController.text,
-                                ).then((_) => context.go('/home'));
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ...!customServer
+                        ? [
+                            FilledButton(
+                              onPressed: () {
+                                final future = _wakatimeLogin(authApi)
+                                    .then((_) => context.go('/home'));
 
                                 setState(() {
                                   _loginFuture = future;
                                 });
                               },
-                        child: const Text('Login with custom server'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8.0),
-                  Text(
-                    'Currently supported server implementations: Wakapi\nOther servers may not work',
-                    style: theme.textTheme.bodySmall,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              );
-            },
+                              child: const Text('Login with WakaTime'),
+                            ),
+                            const SizedBox(height: 8.0),
+                            Text(
+                              'Login with your WakaTime account hosted on wakatime.com',
+                              style: theme.textTheme.bodySmall,
+                              textAlign: TextAlign.center,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12.0),
+                              child: OrSeparator(),
+                            ),
+                          ]
+                        : [
+                            TextField(
+                              controller: _baseApiUriController,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: "Base API URI",
+                                hintText:
+                                    "https://example.com/api/compat/wakatime/v1",
+                              ),
+                            ),
+                            const SizedBox(height: 8.0),
+                            TextField(
+                              controller: _apiTokenController,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: "API token",
+                              ),
+                            ),
+                            const SizedBox(height: 8.0),
+                          ],
+                    Row(
+                      mainAxisAlignment: !customServer
+                          ? MainAxisAlignment.center
+                          : MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (customServer)
+                          BackButton(
+                              onPressed: () => ref
+                                  .read(_customServerProvider.notifier)
+                                  .state = false),
+                        FilledButton(
+                          onPressed: !customServer
+                              ? () => ref
+                                  .read(_customServerProvider.notifier)
+                                  .state = true
+                              : () {
+                                  final future = _customLogin(
+                                    authApi,
+                                    _baseApiUriController.text,
+                                    _apiTokenController.text,
+                                  ).then((_) => context.go('/home'));
+
+                                  setState(() {
+                                    _loginFuture = future;
+                                  });
+                                },
+                          child: const Text('Login with custom server'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      'Currently supported server implementations: Wakapi\nOther servers may not work',
+                      style: theme.textTheme.bodySmall,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
