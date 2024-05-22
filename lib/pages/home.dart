@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/pages/projects.dart';
 import 'package:flutterwaka/pages/summary.dart';
 import 'package:flutterwaka/pages/timeline.dart';
+import 'package:flutterwaka/providers/localization.dart';
 import 'package:flutterwaka/providers/logged_user.dart';
+import 'package:flutterwaka/providers/settings/dashboard.dart';
 import 'package:flutterwaka/widgets/avatar.dart';
 import 'package:flutterwaka/widgets/cancellable_fab.dart';
 import 'package:flutterwaka/widgets/dialogs/profile.dart';
@@ -24,6 +26,21 @@ final _previousPage = StateProvider<int>((ref) {
 final _showFab = StateProvider((ref) {
   ref.watch(summaryRangeProvider);
   return true;
+});
+final _shouldShowCancel = Provider<bool>((ref) {
+  final currentRange = ref.watch(summaryRangeProvider);
+  final defaultRange = ref.watch(dashboardSettingsProvider).range;
+  final now = DateTime.now();
+  final locale = ref.watch(localeProvider);
+  final localization = DateFormat.yMMMMEEEEd(Intl.canonicalizedLocale(
+    locale.toString(),
+  ));
+
+  return !currentRange.end.isSameDay(now) ||
+      !currentRange.start.isSameDay(
+        defaultRange.buildRange(
+            now, (localization.dateSymbols.FIRSTDAYOFWEEK + 1) % 7),
+      );
 });
 
 final format = DateFormat('dd/MM/yyyy');
@@ -134,6 +151,7 @@ class HomePage extends ConsumerWidget {
     DateTimeRange range,
     bool showClear,
   ) {
+    final shouldShowCancel = ref.watch(_shouldShowCancel);
     if (page != 0) return null;
 
     return CancellableFAB(
@@ -141,7 +159,7 @@ class HomePage extends ConsumerWidget {
       onCancelTapped: () => ref.invalidate(summaryRangeProvider),
       primary: const Icon(LucideIcons.calendar),
       cancel: const Icon(LucideIcons.x),
-      open: !_thisWeek(range) && showClear,
+      open: shouldShowCancel && showClear,
     );
   }
 
