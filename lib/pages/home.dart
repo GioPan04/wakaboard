@@ -1,7 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterwaka/pages/projects.dart';
 import 'package:flutterwaka/pages/summary.dart';
@@ -85,17 +84,9 @@ class HomePage extends ConsumerWidget {
     final range = ref.watch(summaryRangeProvider);
     final avatar = ref.watch(profilePicProvider).valueOrNull;
     final showFab = ref.watch(_showFab);
-    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle(
-          systemNavigationBarColor: ElevationOverlay.applySurfaceTint(
-            theme.colorScheme.surface,
-            theme.colorScheme.surfaceTint,
-            3.0,
-          ),
-        ),
         title: Text(_title(page, range)),
         actions: [
           Padding(

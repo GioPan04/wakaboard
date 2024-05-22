@@ -110,7 +110,7 @@ class App extends ConsumerWidget {
             colorScheme: darkScheme,
             appBarTheme: AppBarTheme(
               systemOverlayStyle: SystemUiOverlayStyle(
-                systemNavigationBarColor: darkScheme?.background,
+                systemNavigationBarColor: darkScheme?.surface,
               ),
             ),
           ),
@@ -120,7 +120,7 @@ class App extends ConsumerWidget {
             useMaterial3: true,
             appBarTheme: AppBarTheme(
               systemOverlayStyle: SystemUiOverlayStyle(
-                systemNavigationBarColor: lightScheme?.background,
+                systemNavigationBarColor: lightScheme?.surface,
               ),
             ),
           ),
